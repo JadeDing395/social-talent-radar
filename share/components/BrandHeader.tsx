@@ -31,7 +31,7 @@ export default function BrandHeader({ actions }: Props) {
           <BrandMark spinning={isScanning} color={accentColor} />
           <div className="leading-tight">
             <div className="text-[15px] font-semibold tracking-tight text-[#18181b]">
-              Talent Radar
+              TalentPilot
             </div>
             <div className="text-[11px] text-[#71717a]">
               {isScanning ? (
@@ -45,7 +45,7 @@ export default function BrandHeader({ actions }: Props) {
                   {totalProgress.kept > 0 ? ` · 命中 ${totalProgress.kept}` : ""}
                 </span>
               ) : (
-                "跨平台美术人才发现"
+                "觅talent · AI 招聘官引擎"
               )}
             </div>
           </div>

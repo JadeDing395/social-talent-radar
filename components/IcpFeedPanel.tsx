@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import SectionCard from "./SectionCard";
 import IcpReviewModal from "./IcpReviewModal";
 import { loadAiConfig } from "./AiSettingsModal";
+import CyclistLoader from "./CyclistLoader";
+import { useRadarScan } from "./RadarScanContext";
 import type { ICP, ICPInput } from "@/lib/icp-shared";
 
 interface Props {
@@ -41,15 +43,14 @@ function splitTextarea(value: string): string[] {
 export default function IcpFeedPanel({ onApply }: Props) {
   const [expanded, setExpanded] = useState(true);
   const [activeTabs, setActiveTabs] = useState<FeedTab[]>(["companyUrl", "briefSentence"]);
-  const [companyUrl, setCompanyUrl] = useState("https://www.xd.com");
+  const [companyUrl, setCompanyUrl] = useState("");
   const [careerPageUrl, setCareerPageUrl] = useState("");
   const [briefSentence, setBriefSentence] = useState("");
   const [uploadedResumes, setUploadedResumes] = useState<UploadedResume[]>([]);
   const [uploadingResume, setUploadingResume] = useState(false);
   const [topPerformerText, setTopPerformerText] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [reviewingIcp, setReviewingIcp] = useState<ICP | null>(null);
+  const [panelError, setPanelError] = useState("");
+  const { icpGeneration, startIcpGeneration, clearIcpGeneration } = useRadarScan();
 
   const input = useMemo<ICPInput>(() => ({
     companyUrl: activeTabs.includes("companyUrl") ? companyUrl.trim() || undefined : undefined,
@@ -65,6 +66,10 @@ export default function IcpFeedPanel({ onApply }: Props) {
     !!input.briefSentence ||
     (input.successResumes?.length ?? 0) > 0 ||
     (input.topPerformerLinks?.length ?? 0) > 0;
+  const hasPositionSignal =
+    !!input.briefSentence ||
+    (input.successResumes?.length ?? 0) > 0 ||
+    (input.topPerformerLinks?.length ?? 0) > 0;
 
   const toggleTab = (tab: FeedTab) => {
     setActiveTabs((prev) => (
@@ -76,7 +81,7 @@ export default function IcpFeedPanel({ onApply }: Props) {
     if (!files || files.length === 0) return;
 
     setUploadingResume(true);
-    setError("");
+    setPanelError("");
 
     try {
       const formData = new FormData();
@@ -99,7 +104,7 @@ export default function IcpFeedPanel({ onApply }: Props) {
       }));
       setUploadedResumes((prev) => [...prev, ...parsed]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setPanelError(err instanceof Error ? err.message : String(err));
     } finally {
       setUploadingResume(false);
     }
@@ -112,34 +117,23 @@ export default function IcpFeedPanel({ onApply }: Props) {
   const handleSynthesize = async () => {
     const aiConfig = loadAiConfig();
     if (!aiConfig.apiKey?.trim()) {
-      setError("请先在右上角「AI 设置」里配置 API Key");
+      setPanelError("请先在右上角「AI 设置」里配置 API Key");
       return;
     }
     if (!hasAnyInput) {
-      setError("请至少提供一个输入来源");
+      setPanelError("请至少提供一个输入来源");
+      return;
+    }
+    if (!hasPositionSignal) {
+      setPanelError("请先填写岗位名称或一句话需求");
       return;
     }
 
-    setLoading(true);
-    setError("");
-
-    try {
-      const res = await fetch("/api/icp/synthesize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input, aiConfig }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.icp) {
-        throw new Error(data.error || "ICP 生成失败");
-      }
-      setReviewingIcp(data.icp as ICP);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setLoading(false);
-    }
+    setPanelError("");
+    void startIcpGeneration(input, aiConfig);
   };
+
+  const error = panelError || icpGeneration.error;
 
   return (
     <>
@@ -193,7 +187,7 @@ export default function IcpFeedPanel({ onApply }: Props) {
                     <input
                       value={companyUrl}
                       onChange={(event) => setCompanyUrl(event.target.value)}
-                      placeholder="https://www.xd.com"
+                      placeholder="https://careers.yourcompany.com"
                       className={fieldClass}
                     />
                   </div>
@@ -294,16 +288,20 @@ export default function IcpFeedPanel({ onApply }: Props) {
               <button
                 type="button"
                 onClick={handleSynthesize}
-                disabled={loading || !hasAnyInput}
+                disabled={icpGeneration.loading || !hasAnyInput || !hasPositionSignal}
                 className={`px-5 py-2.5 text-sm font-semibold rounded-xl text-white ${
-                  loading || !hasAnyInput
+                  icpGeneration.loading || !hasAnyInput || !hasPositionSignal
                     ? "bg-slate-300 cursor-not-allowed"
                     : "bg-slate-900 hover:bg-slate-800 shadow-[0_8px_24px_rgba(15,23,42,0.14)]"
                 }`}
               >
-                {loading ? "反推中..." : "反推 ICP"}
+                {icpGeneration.loading ? "反推中..." : "反推 ICP"}
               </button>
             </div>
+
+            {icpGeneration.loading && (
+              <CyclistLoader message="正在反推招聘画像 ICP，请稍候..." />
+            )}
 
             {error && (
               <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
@@ -315,11 +313,11 @@ export default function IcpFeedPanel({ onApply }: Props) {
       </SectionCard>
 
       <IcpReviewModal
-        icp={reviewingIcp}
-        onClose={() => setReviewingIcp(null)}
+        icp={icpGeneration.icp}
+        onClose={clearIcpGeneration}
         onApply={(icp) => {
           onApply(icp);
-          setReviewingIcp(null);
+          clearIcpGeneration();
         }}
       />
     </>

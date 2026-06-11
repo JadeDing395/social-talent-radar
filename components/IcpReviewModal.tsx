@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_EDUCATION, EDUCATION_OPTIONS, normalizeEducation, type ICP } from "@/lib/icp-shared";
 import type { ScoreWeights } from "@/lib/scoring-config";
 import { loadAiConfig } from "./AiSettingsModal";
+import CyclistLoader from "./CyclistLoader";
 
 interface Props {
   icp: ICP | null;
@@ -29,6 +30,16 @@ interface JobListing {
   snippet: string;
 }
 
+interface ChannelRecommendation {
+  name: string;
+  status: "supported" | "planned";
+  tone: "priority" | "secondary" | "planned";
+  reason: string;
+}
+
+const supportedRankMarks = ["①", "②", "③"];
+const plannedRankMarks = ["④", "⑤", "⑥"];
+
 function splitList(value: string): string[] {
   return Array.from(
     new Set(
@@ -42,6 +53,69 @@ function splitList(value: string): string[] {
 
 function joinList(values?: string[]): string {
   return (values ?? []).join("\n");
+}
+
+function buildChannelRecommendations(position: string, jd: string): ChannelRecommendation[] {
+  const text = `${position}\n${jd}`.toLowerCase();
+  const has = (pattern: RegExp) => pattern.test(text);
+
+  const isUi = has(/ui|交互|界面|ux|设计师/);
+  const isTechArt = has(/技术美术|(^|[\s/（(])ta([\s/）)]|$)|shader|渲染|管线|工具开发|脚本|材质/);
+  const isAnimation = has(/3d|动画|动作|特效|骨骼|maya|max|ue|虚幻|unreal/);
+  const isIllustration = has(/插画|原画|角色|二次元|立绘|概念设计|concept|角色设计/);
+
+  if (isTechArt) {
+    return [
+      { name: "ArtStation", status: "supported", tone: "priority", reason: "技术美术、渲染与引擎向作品和履历最集中。" },
+      { name: "微博", status: "supported", tone: "secondary", reason: "能补充国内项目曝光和业内社交，但 TA 比例不高。" },
+      { name: "小红书", status: "supported", tone: "secondary", reason: "可补少量引擎向内容与个人表达，召回通常弱于作品站。" },
+      { name: "GitHub", status: "planned", tone: "planned", reason: "技术美术工具链、Shader、插件作品可见度高。" },
+      { name: "Bilibili", status: "planned", tone: "planned", reason: "部分 TA 会发渲染拆解和技术演示视频。" },
+      { name: "Behance", status: "planned", tone: "planned", reason: "可补充作品呈现，但技术向密度一般。" },
+    ];
+  }
+
+  if (isAnimation) {
+    return [
+      { name: "ArtStation", status: "supported", tone: "priority", reason: "3D、动作、特效和动画类作品集最集中，专业度最高。" },
+      { name: "小红书", status: "supported", tone: "secondary", reason: "二次元与动效分享有一定活跃度，但动画岗位密度较低。" },
+      { name: "微博", status: "supported", tone: "secondary", reason: "原画和插画大粉多，纯动画/动作设计师比例偏低。" },
+      { name: "Bilibili", status: "planned", tone: "planned", reason: "动画、特效、动作设计师大量活跃，适合后续优先接入。" },
+      { name: "站酷", status: "planned", tone: "planned", reason: "国内动效与视觉设计师社区，能补一部分动画人才。" },
+      { name: "Behance", status: "planned", tone: "planned", reason: "可补 motion、动画设计作品，但游戏向密度不如 ArtStation。" },
+    ];
+  }
+
+  if (isUi) {
+    return [
+      { name: "小红书", status: "supported", tone: "priority", reason: "UI、交互和视觉设计师内容活跃，个人风格表达强。" },
+      { name: "ArtStation", status: "supported", tone: "secondary", reason: "能补作品集型设计师，但 UI 覆盖不如小红书直接。" },
+      { name: "微博", status: "supported", tone: "secondary", reason: "可补行业曝光与设计师社交，但结构化作品较少。" },
+      { name: "站酷", status: "planned", tone: "planned", reason: "国内视觉与交互设计师浓度高，后续值得接入。" },
+      { name: "Behance", status: "planned", tone: "planned", reason: "国际化视觉案例完整，适合高级 UI/品牌设计方向。" },
+      { name: "Bilibili", status: "planned", tone: "planned", reason: "可补教程型和动效型设计师，但筛选成本较高。" },
+    ];
+  }
+
+  if (isIllustration) {
+    return [
+      { name: "ArtStation", status: "supported", tone: "priority", reason: "原画、插画、概念设计作品集最稳定，筛选效率最高。" },
+      { name: "小红书", status: "supported", tone: "secondary", reason: "二次元插画和视觉风格内容活跃，容易找到新锐画师。" },
+      { name: "微博", status: "supported", tone: "secondary", reason: "原画大粉和同人画师聚集，补充头部曝光账号很有效。" },
+      { name: "Bilibili", status: "planned", tone: "planned", reason: "有部分绘画过程和项目分享，可补内容型创作者。" },
+      { name: "站酷", status: "planned", tone: "planned", reason: "国内视觉设计作品较多，适合补商业插画人群。" },
+      { name: "Behance", status: "planned", tone: "planned", reason: "适合补海外概念设计与品牌插画作品集。" },
+    ];
+  }
+
+  return [
+    { name: "ArtStation", status: "supported", tone: "priority", reason: "默认首选，专业作品集最集中，筛人效率最高。" },
+    { name: "小红书", status: "supported", tone: "secondary", reason: "适合补充国内创作者和风格表达型人才。" },
+    { name: "微博", status: "supported", tone: "secondary", reason: "适合补头部曝光账号与同人/项目讨论场景。" },
+    { name: "Bilibili", status: "planned", tone: "planned", reason: "适合后续补视频化作品和教程型创作者。" },
+    { name: "站酷", status: "planned", tone: "planned", reason: "可补国内设计和商业视觉方向人才。" },
+    { name: "Behance", status: "planned", tone: "planned", reason: "可补海外作品集和品牌设计向案例。" },
+  ];
 }
 
 export default function IcpReviewModal({ icp, onApply, onClose }: Props) {
@@ -63,6 +137,10 @@ export default function IcpReviewModal({ icp, onApply, onClose }: Props) {
     if (!draft) return 0;
     return weightKeys.reduce((total, key) => total + draft.weights[key], 0);
   }, [draft]);
+  const channelRecommendations = useMemo(
+    () => (draft ? buildChannelRecommendations(draft.position, draft.jd) : []),
+    [draft],
+  );
 
   if (!draft) return null;
 
@@ -284,6 +362,14 @@ export default function IcpReviewModal({ icp, onApply, onClose }: Props) {
                 </div>
               )}
 
+              {jobsLoading && (
+                <CyclistLoader message="正在翻页抓取岗位，请稍候..." />
+              )}
+
+              {!jobsLoading && fetchingJobUrl && (
+                <CyclistLoader message="正在抓取岗位详情 JD，请稍候..." />
+              )}
+
               {jobs.length > 0 && (
                 <div className="space-y-2">
                   <div className="text-xs font-medium text-slate-700">岗位清单</div>
@@ -383,6 +469,59 @@ export default function IcpReviewModal({ icp, onApply, onClose }: Props) {
                   />
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <div className="text-xs font-medium text-slate-700">渠道策略</div>
+              <p className="text-[11px] text-slate-400 mt-1">结合岗位与 JD 特征，先给出渠道优先级建议，再编辑各平台搜索策略。</p>
+            </div>
+
+            <div className="border border-dashed border-slate-300 rounded-2xl bg-slate-50 px-4 py-4">
+              <div className="text-sm font-semibold text-slate-900">推荐渠道优先级（基于岗位特征）</div>
+              <div className="mt-3 space-y-2">
+                {channelRecommendations.filter((item) => item.status === "supported").map((item, index) => (
+                  <div key={item.name} className="flex items-start justify-between gap-3 rounded-xl bg-white border border-slate-200 px-3 py-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-semibold text-slate-900">{`${supportedRankMarks[index] || `${index + 1}.`} ${item.name}`}</span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                            item.tone === "priority"
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : "bg-amber-50 text-amber-700 border border-amber-200"
+                          }`}
+                        >
+                          {item.tone === "priority" ? "优先" : "次选"}
+                        </span>
+                        <span className="text-[11px]" style={{ color: item.name === "ArtStation" ? "#0d4f3c" : item.name === "小红书" ? "#cc1c35" : "#cc6800" }}>
+                          {item.name === "ArtStation" ? "🟢" : "🟡"}
+                        </span>
+                      </div>
+                      <div className="text-xs text-slate-500 mt-1">{item.reason}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-dashed border-slate-300">
+                <div className="text-[11px] font-semibold text-slate-500 tracking-[0.18em] uppercase">规划中</div>
+                <div className="mt-2 space-y-2">
+                  {channelRecommendations.filter((item) => item.status === "planned").map((item, index) => (
+                    <div key={item.name} className="flex items-start justify-between gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-100/70 px-3 py-3">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-semibold text-slate-600">{`${plannedRankMarks[index] || `${index + 4}.`} ${item.name}`}</span>
+                          <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-200 text-slate-500 border border-slate-300">规划中</span>
+                          <span className="text-[11px] text-sky-600">🔵</span>
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1">{item.reason}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 

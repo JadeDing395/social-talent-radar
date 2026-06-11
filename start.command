@@ -1,5 +1,5 @@
 #!/bin/bash
-# Social Talent Radar — 本地启动脚本（macOS 双击运行）
+# TalentPilot（觅talent）— 本地启动脚本（macOS 双击运行）
 # 用法：双击 start.command；首次运行会自动 npm install。
 
 set -e
@@ -34,7 +34,7 @@ PORT="${PORT:-3000}"
 
 echo ""
 echo "============================================================"
-echo "🚀 Social Talent Radar 启动中..."
+echo "🚀 TalentPilot 启动中..."
 echo "服务地址: http://localhost:$PORT"
 echo "首次使用："
 echo "  1) 右上角「AI 设置」填入 API Key"

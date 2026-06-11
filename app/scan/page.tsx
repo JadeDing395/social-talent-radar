@@ -24,6 +24,7 @@ import { PLATFORM_LIST, PLATFORMS } from "@/lib/platforms";
 import { DEFAULT_WEIGHTS } from "@/lib/scoring-config";
 
 const OUTREACH_ADV_STORAGE = "radar-outreach-company-advantages";
+type ResultPlatformFilter = "all" | Platform;
 
 export default function ScanPage() {
   const {
@@ -42,6 +43,7 @@ export default function ScanPage() {
   const [hydrated, setHydrated] = useState(false);
   const [appliedIcp, setAppliedIcp] = useState<ICP | null>(null);
   const [companyAdvantages, setCompanyAdvantages] = useState("");
+  const [resultPlatformFilter, setResultPlatformFilter] = useState<ResultPlatformFilter>("all");
 
   // mount 后从 localStorage 恢复勾选
   useEffect(() => {
@@ -144,6 +146,25 @@ export default function ScanPage() {
     .filter((b) => b.brief);
 
   const focusPlatform: Platform | null = selected.length === 1 ? selected[0] : null;
+  const visibleResultPlatforms = PLATFORM_LIST.filter((p) =>
+    mergedResults.some((r) => r.platform === p.id) || mergedReviewed.some((r) => r.platform === p.id),
+  );
+  const visibleResultPlatformIds = visibleResultPlatforms.map((p) => p.id).join("|");
+
+  useEffect(() => {
+    if (resultPlatformFilter === "all") return;
+    if (!visibleResultPlatformIds.split("|").filter(Boolean).includes(resultPlatformFilter)) {
+      setResultPlatformFilter("all");
+    }
+  }, [resultPlatformFilter, visibleResultPlatformIds]);
+
+  const filteredResults = resultPlatformFilter === "all"
+    ? mergedResults
+    : mergedResults.filter((r) => r.platform === resultPlatformFilter);
+  const filteredReviewed = resultPlatformFilter === "all"
+    ? mergedReviewed
+    : mergedReviewed.filter((r) => r.platform === resultPlatformFilter);
+  const resultFilterLabel = resultPlatformFilter === "all" ? "全部平台" : PLATFORMS[resultPlatformFilter].label;
 
   return (
     <>
@@ -162,7 +183,7 @@ export default function ScanPage() {
           <div className="flex items-end justify-between gap-6 flex-wrap">
             <div className="min-w-0 flex-1">
               <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400 mb-3 font-medium">
-                Talent Radar · Cross-Platform
+                TalentPilot · Cross-Platform
               </div>
               <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 leading-[1.05]">
                 跨平台美术人才扫描
@@ -284,43 +305,124 @@ export default function ScanPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
-                  ✅ 命中 <span className="tabular-nums" style={{ color: "var(--color-brand)" }}>{mergedResults.length}</span>
+                  ✅ 命中 <span className="tabular-nums" style={{ color: "var(--color-brand)" }}>{filteredResults.length}</span>
+                  {resultPlatformFilter !== "all" && (
+                    <span className="text-base text-slate-400 font-medium"> / {mergedResults.length}</span>
+                  )}
                 </h2>
-                <p className="text-[11px] text-slate-400 mt-1">按总分降序混排 · 卡片上的徽章标识来源平台</p>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  按总分降序混排 · 卡片上的徽章标识来源平台 · 当前筛选：{resultFilterLabel}
+                </p>
               </div>
-              <div className="inline-flex rounded-full p-1 bg-slate-100">
-                {(["card", "table"] as const).map((v) => (
-                  <button
-                    key={v}
-                    onClick={() => setView(v)}
-                    className={`px-3.5 py-1 text-xs rounded-full transition-all ${
-                      view === v ? "text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
-                    }`}
-                    style={view === v ? { backgroundColor: "var(--color-brand)" } : undefined}
-                  >
-                    {v === "card" ? "卡片" : "表格"}
-                  </button>
-                ))}
+              <div className="flex items-center gap-3 flex-wrap justify-end">
+                {visibleResultPlatforms.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-slate-500">平台：</span>
+                    <div className="segmented">
+                      <button
+                        type="button"
+                        onClick={() => setResultPlatformFilter("all")}
+                        data-active={resultPlatformFilter === "all" ? "true" : "false"}
+                        className="segmented-item"
+                      >
+                        全部
+                      </button>
+                      {visibleResultPlatforms.map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => setResultPlatformFilter(p.id)}
+                          data-active={resultPlatformFilter === p.id ? "true" : "false"}
+                          className="segmented-item"
+                          style={resultPlatformFilter === p.id ? { color: p.color.brand } : undefined}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="inline-flex rounded-full p-1 bg-slate-100">
+                  {(["card", "table"] as const).map((v) => (
+                    <button
+                      key={v}
+                      onClick={() => setView(v)}
+                      className={`px-3.5 py-1 text-xs rounded-full transition-all ${
+                        view === v ? "text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
+                      }`}
+                      style={view === v ? { backgroundColor: "var(--color-brand)" } : undefined}
+                    >
+                      {v === "card" ? "卡片" : "表格"}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
             {view === "card" ? (
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                {mergedResults.map((r) => (
-                  <RadarResultCard key={`${r.platform}-${r.platform_user_id}`} result={r} />
-                ))}
-              </div>
+              filteredResults.length > 0 ? (
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                  {filteredResults.map((r) => (
+                    <RadarResultCard key={`${r.platform}-${r.platform_user_id}`} result={r} />
+                  ))}
+                </div>
+              ) : (
+                <SectionCard title="当前筛选暂无命中" subtitle={`已切到 ${resultFilterLabel}，可切回「全部」查看其他平台结果`}>
+                  <div className="text-sm text-slate-400 py-2">这个平台本次没有命中候选人。</div>
+                </SectionCard>
+              )
             ) : (
-              <RadarResultsTable results={mergedResults} />
+              filteredResults.length > 0 ? (
+                <RadarResultsTable results={filteredResults} />
+              ) : (
+                <SectionCard title="当前筛选暂无命中" subtitle={`已切到 ${resultFilterLabel}，可切回「全部」查看其他平台结果`}>
+                  <div className="text-sm text-slate-400 py-2">这个平台本次没有命中候选人。</div>
+                </SectionCard>
+              )
             )}
           </section>
         )}
 
         {mergedReviewed.length > 0 && (
           <section>
-            <h2 className="text-xl font-semibold tracking-tight text-slate-900 mb-3">
-              👀 未命中 <span className="text-slate-400 tabular-nums">({mergedReviewed.length})</span>
-            </h2>
-            <RadarResultsTable results={mergedReviewed} />
+            <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+              <h2 className="text-xl font-semibold tracking-tight text-slate-900">
+                👀 未命中 <span className="text-slate-400 tabular-nums">({filteredReviewed.length}{resultPlatformFilter !== "all" ? ` / ${mergedReviewed.length}` : ""})</span>
+              </h2>
+              {mergedResults.length === 0 && visibleResultPlatforms.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-slate-500">平台：</span>
+                  <div className="segmented">
+                    <button
+                      type="button"
+                      onClick={() => setResultPlatformFilter("all")}
+                      data-active={resultPlatformFilter === "all" ? "true" : "false"}
+                      className="segmented-item"
+                    >
+                      全部
+                    </button>
+                    {visibleResultPlatforms.map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setResultPlatformFilter(p.id)}
+                        data-active={resultPlatformFilter === p.id ? "true" : "false"}
+                        className="segmented-item"
+                        style={resultPlatformFilter === p.id ? { color: p.color.brand } : undefined}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            {filteredReviewed.length > 0 ? (
+              <RadarResultsTable results={filteredReviewed} />
+            ) : (
+              <SectionCard title="当前筛选暂无未命中结果" subtitle={`已切到 ${resultFilterLabel}`}>
+                <div className="text-sm text-slate-400 py-2">这个平台当前没有未命中候选人。</div>
+              </SectionCard>
+            )}
           </section>
         )}
 

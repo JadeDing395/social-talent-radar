@@ -8,6 +8,7 @@ import {
   AiClientConfig,
 } from "@/lib/scoring-config";
 import type { Platform } from "@/lib/types";
+import type { ICP, ICPInput } from "@/lib/icp-shared";
 import { PLATFORM_LIST } from "@/lib/platforms";
 
 export interface ScanStatus {
@@ -51,6 +52,14 @@ interface StartScanArgs {
   aiConfig: AiClientConfig;
 }
 
+interface IcpGenerationState {
+  loading: boolean;
+  error: string;
+  icp: ICP | null;
+  input?: ICPInput;
+  completedAt?: number;
+}
+
 interface RadarScanContextValue {
   /** 每个平台独立的扫描状态;未启动过的平台为 undefined */
   statusByPlatform: ByPlatform<ScanStatus>;
@@ -69,17 +78,22 @@ interface RadarScanContextValue {
   usageRefreshSignal: number;
   /** 各平台合计目标 / 已分析 / 已命中 — 给顶部进度胶囊用 */
   totalProgress: { kept: number; analyzed: number; target: number };
+  /** ICP 反推跨页面状态;请求由根 Provider 承载,避免切页丢结果 */
+  icpGeneration: IcpGenerationState;
 
   startScan: (args: StartScanArgs) => Promise<void>;
   /** 不传 = 停所有正在跑的平台;传 platform = 只停这一个 */
   stopScan: (platform?: Platform) => void;
   resetScan: () => void;
+  startIcpGeneration: (input: ICPInput, aiConfig: AiClientConfig) => Promise<void>;
+  clearIcpGeneration: () => void;
 }
 
 const RadarScanContext = createContext<RadarScanContextValue | null>(null);
 
 const INITIAL_STATUS: ScanStatus = { type: "idle", message: "", current: 0, total: 0 };
 const INITIAL_USAGE: UsageRunSnapshot = { input: 0, output: 0, calls: 0 };
+const INITIAL_ICP_GENERATION: IcpGenerationState = { loading: false, error: "", icp: null };
 const PERSIST_KEY = "radar-scan-snapshot-v2";
 
 interface PersistShape {
@@ -119,8 +133,10 @@ export function RadarScanProvider({ children }: { children: ReactNode }) {
   const [briefByPlatform, setBriefByPlatform] = useState<ByPlatform<PositionBrief | null>>({});
   const [usageByPlatform, setUsageByPlatform] = useState<ByPlatform<UsageRunSnapshot>>({});
   const [usageRefreshSignal, setUsageRefreshSignal] = useState(0);
+  const [icpGeneration, setIcpGeneration] = useState<IcpGenerationState>(INITIAL_ICP_GENERATION);
   const [hydrated, setHydrated] = useState(false);
   const abortRefByPlatform = useRef<Partial<Record<Platform, AbortController>>>({});
+  const icpGenerationRunRef = useRef<Promise<void> | null>(null);
 
   // Mount 后从 sessionStorage 恢复
   useEffect(() => {
@@ -246,6 +262,49 @@ export function RadarScanProvider({ children }: { children: ReactNode }) {
       try { sessionStorage.removeItem(PERSIST_KEY); } catch { /* ignore */ }
     }
   }, [stopScan]);
+
+  const startIcpGeneration = useCallback((input: ICPInput, aiConfig: AiClientConfig) => {
+    if (icpGenerationRunRef.current) return icpGenerationRunRef.current;
+
+    const task = (async () => {
+      setIcpGeneration({ loading: true, error: "", icp: null, input });
+
+      try {
+        const res = await fetch("/api/icp/synthesize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input, aiConfig }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.icp) {
+          throw new Error(data.error || "ICP 生成失败");
+        }
+        setIcpGeneration({
+          loading: false,
+          error: "",
+          icp: data.icp as ICP,
+          input,
+          completedAt: Date.now(),
+        });
+      } catch (err) {
+        setIcpGeneration({
+          loading: false,
+          error: err instanceof Error ? err.message : String(err),
+          icp: null,
+          input,
+        });
+      } finally {
+        icpGenerationRunRef.current = null;
+      }
+    })();
+
+    icpGenerationRunRef.current = task;
+    return task;
+  }, []);
+
+  const clearIcpGeneration = useCallback(() => {
+    setIcpGeneration(INITIAL_ICP_GENERATION);
+  }, []);
 
   /** 跑单个平台的扫描流;复用旧的 NDJSON 解析,把所有 setX 改成函数式更新对应槽 */
   const runOnePlatform = useCallback(
@@ -494,9 +553,12 @@ export function RadarScanProvider({ children }: { children: ReactNode }) {
         totalRunUsage,
         usageRefreshSignal,
         totalProgress,
+        icpGeneration,
         startScan,
         stopScan,
         resetScan,
+        startIcpGeneration,
+        clearIcpGeneration,
       }}
     >
       {children}

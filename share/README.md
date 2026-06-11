@@ -1,6 +1,6 @@
-# Social Talent Radar
+# TalentPilot（觅talent）
 
-**跨平台美术人才扫描工具** · ArtStation / 微博 / 小红书 三平台并发抓取 + AI 评分 + 候选人库管理
+**AI 招聘官引擎** · ArtStation / 微博 / 小红书 三平台并发寻访 + AI 评分 + 候选人库管理 + 人工确认触达
 
 ---
 

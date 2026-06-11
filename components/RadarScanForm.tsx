@@ -80,6 +80,7 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
   const [position, setPosition] = useState(POSITIONS[0]);
   const [customPosition, setCustomPosition] = useState("");
   const [jd, setJd] = useState("");
+  const [savedJdForCurrentPosition, setSavedJdForCurrentPosition] = useState("");
   const [jdSavedAt, setJdSavedAt] = useState<number | null>(null);
   const [artStyles, setArtStyles] = useState<string[]>([]);
   const [tools, setTools] = useState<string[]>([]);
@@ -125,12 +126,15 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
   useEffect(() => {
     if (!effectivePositionKey) {
       setJd("");
+      setSavedJdForCurrentPosition("");
       setJdSavedAt(null);
       return;
     }
     const map = loadJdMap();
-    setJd(map[effectivePositionKey] ?? "");
-    setJdSavedAt(map[effectivePositionKey] ? Date.now() : null);
+    const savedJd = map[effectivePositionKey] ?? "";
+    setJd(savedJd);
+    setSavedJdForCurrentPosition(savedJd);
+    setJdSavedAt(savedJd ? Date.now() : null);
   }, [effectivePositionKey]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -140,13 +144,10 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
       return;
     }
     saveJdForPosition(effectivePositionKey, jd);
+    setSavedJdForCurrentPosition(jd);
     setJdSavedAt(Date.now());
   };
-  const jdInMap = (() => {
-    if (!effectivePositionKey) return "";
-    return loadJdMap()[effectivePositionKey] ?? "";
-  })();
-  const jdDirty = jd.trim() !== jdInMap.trim();
+  const jdDirty = jd.trim() !== savedJdForCurrentPosition.trim();
 
   const persist = (snapshot: ScanFormSnapshot & { customPosition: string }, nextWeights: ScoreWeights = weights) => {
     try {
@@ -184,6 +185,7 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
     setPosition(nextPosition);
     setCustomPosition(nextCustomPosition);
     setJd(appliedIcp.jd);
+    setSavedJdForCurrentPosition(appliedIcp.jd);
     setJdSavedAt(Date.now());
     setThemes(appliedIcp.keywords);
     setEducation(normalizeEducation(appliedIcp.education));

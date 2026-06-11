@@ -162,7 +162,7 @@ export default function CandidatesPage() {
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
               <h1 className="text-4xl font-semibold text-zinc-900 tracking-tight leading-tight">
-                Talent Radar
+                TalentPilot
               </h1>
               <p className="text-sm text-zinc-500 mt-1.5">
                 Cross-platform creator discovery · 跨平台美术人才发现

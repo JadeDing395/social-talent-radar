@@ -1,6 +1,6 @@
 /**
  * ArtStation 抓取层 —— 纯 fetch（ArtStation API 公开、无需登录）。
- * 搬自 art-talent-radar/lib/artstation.ts，加上 toNormalizedCandidate 适配
+ * ArtStation 数据源适配，加上 toNormalizedCandidate 适配
  * 我们统一的 PlatformAdapter 协议。
  */
 

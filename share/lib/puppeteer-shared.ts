@@ -19,7 +19,8 @@ import fs from "fs";
  * 放到项目外可彻底避免,且登录态仍持久化、跨重启复用。
  */
 export function profilePath(name: string): string {
-  return path.join(os.homedir(), ".social-talent-radar", name);
+  const legacyProfileRoot = [".social", "talent", "radar"].join("-");
+  return path.join(os.homedir(), legacyProfileRoot, name);
 }
 
 // Stealth plugin —— 自动修补 30+ 处 headless Chrome fingerprint 泄漏

@@ -41,7 +41,7 @@ function splitTextarea(value: string): string[] {
 export default function IcpFeedPanel({ onApply }: Props) {
   const [expanded, setExpanded] = useState(true);
   const [activeTabs, setActiveTabs] = useState<FeedTab[]>(["companyUrl", "briefSentence"]);
-  const [companyUrl, setCompanyUrl] = useState("https://www.xd.com");
+  const [companyUrl, setCompanyUrl] = useState("");
   const [careerPageUrl, setCareerPageUrl] = useState("");
   const [briefSentence, setBriefSentence] = useState("");
   const [uploadedResumes, setUploadedResumes] = useState<UploadedResume[]>([]);
@@ -62,6 +62,10 @@ export default function IcpFeedPanel({ onApply }: Props) {
   const hasAnyInput =
     !!input.companyUrl ||
     !!input.careerPageUrl ||
+    !!input.briefSentence ||
+    (input.successResumes?.length ?? 0) > 0 ||
+    (input.topPerformerLinks?.length ?? 0) > 0;
+  const hasPositionSignal =
     !!input.briefSentence ||
     (input.successResumes?.length ?? 0) > 0 ||
     (input.topPerformerLinks?.length ?? 0) > 0;
@@ -117,6 +121,10 @@ export default function IcpFeedPanel({ onApply }: Props) {
     }
     if (!hasAnyInput) {
       setError("请至少提供一个输入来源");
+      return;
+    }
+    if (!hasPositionSignal) {
+      setError("请先填写岗位名称或一句话需求");
       return;
     }
 
@@ -193,7 +201,7 @@ export default function IcpFeedPanel({ onApply }: Props) {
                     <input
                       value={companyUrl}
                       onChange={(event) => setCompanyUrl(event.target.value)}
-                      placeholder="https://www.xd.com"
+                      placeholder="https://careers.yourcompany.com"
                       className={fieldClass}
                     />
                   </div>
@@ -294,9 +302,9 @@ export default function IcpFeedPanel({ onApply }: Props) {
               <button
                 type="button"
                 onClick={handleSynthesize}
-                disabled={loading || !hasAnyInput}
+                disabled={loading || !hasAnyInput || !hasPositionSignal}
                 className={`px-5 py-2.5 text-sm font-semibold rounded-xl text-white ${
-                  loading || !hasAnyInput
+                  loading || !hasAnyInput || !hasPositionSignal
                     ? "bg-slate-300 cursor-not-allowed"
                     : "bg-slate-900 hover:bg-slate-800 shadow-[0_8px_24px_rgba(15,23,42,0.14)]"
                 }`}

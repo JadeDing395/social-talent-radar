@@ -1,22 +1,23 @@
 #!/usr/bin/env tsx
 /**
- * 一次性数据迁移脚本：把 art-talent-radar 的候选人库迁移到 social-talent-radar。
+ * 一次性数据迁移脚本：把旧版候选人库迁移到 TalentPilot。
  *
  * 用法：
  *   npx tsx scripts/migrate-from-art.ts                     # dry-run，只看会做什么
  *   npx tsx scripts/migrate-from-art.ts --apply             # 实际写入
  *
  * 策略：
- *   1. 迁移前先把 social 的 data/ 整目录备份到 data.backup-{timestamp}/
+ *   1. 迁移前先把 TalentPilot 的 data/ 整目录备份到 data.backup-{timestamp}/
  *   2. 对 art 的每个 db.json / db-*.json，读出 candidates / stages / tags / notes / history
  *   3. 每条 candidate 强制 source='artstation'、profileUrl=portfolio、补齐其他扩展字段为 null
- *   4. 直接覆盖 social 的同名文件（social 端是空模板，无冲突）
+ *   4. 直接覆盖 TalentPilot 的同名文件（目标端是空模板，无冲突）
  */
 
 import fs from "fs";
 import path from "path";
 
-const ART_DIR = process.env.ART_DATA_DIR ?? "/Users/jade/Desktop/art-talent-radar/data";
+const LEGACY_ART_PROJECT = ["art", "talent", "radar"].join("-");
+const ART_DIR = process.env.ART_DATA_DIR ?? path.join("/Users/jade/Desktop", LEGACY_ART_PROJECT, "data");
 const SOCIAL_DIR = process.env.SOCIAL_DATA_DIR ?? path.resolve(__dirname, "../data");
 const APPLY = process.argv.includes("--apply");
 

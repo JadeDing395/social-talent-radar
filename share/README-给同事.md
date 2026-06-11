@@ -1,4 +1,4 @@
-# TalentPilot(覇talent) — 同事版使用说明
+# TalentPilot（觅talent） — 同事版使用说明
 
 三平台 AI 招聘官引擎：**ArtStation + 微博 + 小红书**
 

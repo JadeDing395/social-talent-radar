@@ -25,6 +25,7 @@ const PROFILE_DIR = profilePath("chrome-profile-xhs");
 const HOST = "https://www.xiaohongshu.com";
 // 小红书官方区分访客/登录的接口:匿名返回 data.guest=true,登录返回 guest=false + 真实 user_id
 const USER_ME_URL = "https://edith.xiaohongshu.com/api/sns/web/v2/user/me";
+const LOGIN_EXPIRED_MESSAGE = "小红书登录态已失效，请重新登录后再扫描";
 
 export type LoginMode = "qr" | "window";
 
@@ -67,23 +68,30 @@ export function getMyUserId(): string | null {
  * 匿名:{ success:true, data:{ guest:true } };登录:{ success:true, data:{ guest:false, user_id } }。
  * 这是官方区分访客/登录的同一接口,比"有没有 a1 cookie"(设备指纹,匿名也有)可靠。
  */
-async function fetchGuestStatus(s: Session): Promise<{ loggedIn: boolean; userId: string | null }> {
+async function fetchGuestStatus(s: Session): Promise<{ loggedIn: boolean; userId: string | null; message?: string }> {
   const page = await s.getPage();
   if (!page.url().includes("xiaohongshu.com")) {
     await page.goto(`${HOST}/`, { waitUntil: "domcontentloaded", timeout: 15000 });
     await delay(600, 1200);
   }
+  if (/\/website-login|\/login|signin|captcha/i.test(page.url())) {
+    return { loggedIn: false, userId: null, message: LOGIN_EXPIRED_MESSAGE };
+  }
   const res = await page.evaluate(async (url) => {
     try {
       const r = await fetch(url, { credentials: "include" });
-      return { ok: true, body: await r.text() };
+      return { ok: r.ok, status: r.status, body: await r.text() };
     } catch (e) {
-      return { ok: false, body: String(e) };
+      return { ok: false, status: 0, body: String(e) };
     }
   }, USER_ME_URL);
 
   let loggedIn = false;
   let userId: string | null = null;
+  let message: string | undefined;
+  if (res.status === 401 || /captcha|verify|安全验证/i.test(res.body)) {
+    message = LOGIN_EXPIRED_MESSAGE;
+  }
   try {
     const j = JSON.parse(res.body) as { success?: boolean; data?: { guest?: boolean; user_id?: string } };
     if (j?.success && j.data && j.data.guest === false) {
@@ -94,7 +102,7 @@ async function fetchGuestStatus(s: Session): Promise<{ loggedIn: boolean; userId
     // 非 JSON(网络异常等)→ 当未登录
   }
   console.log(`[XHS] user/me → loggedIn=${loggedIn} userId=${userId ?? "-"}`);
-  return { loggedIn, userId };
+  return { loggedIn, userId, message };
 }
 
 export async function checkLoginStatus(): Promise<LoginStatus> {
@@ -102,7 +110,7 @@ export async function checkLoginStatus(): Promise<LoginStatus> {
     // 登录进行中:复用登录浏览器检测(user/me 是 fetch,不会打断二维码 modal),
     // 不另开 headless 浏览器,避免抢 profile 锁。
     const s = loginSession && loginSession.isActive() ? loginSession : session;
-    const { loggedIn, userId } = await fetchGuestStatus(s);
+    const { loggedIn, userId, message } = await fetchGuestStatus(s);
 
     if (loggedIn) {
       if (userId) myUserIdCache = userId; // 顺手缓存,省掉 detectMyUserId 的额外导航
@@ -114,7 +122,7 @@ export async function checkLoginStatus(): Promise<LoginStatus> {
       }
       return { loggedIn: true, message: "小红书登录态正常" };
     }
-    return { loggedIn: false, loginUrl: HOST, message: "未登录或登录态已失效" };
+    return { loggedIn: false, loginUrl: HOST, message: message ?? "未登录或登录态已失效" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.log(`[XHS] checkLoginStatus error: ${msg}`);
@@ -241,24 +249,25 @@ export async function searchUsers(query: string, opts: SearchOpts = {}): Promise
   // 0) URL-level 诊断:有没有被重定向到登录/captcha
   const landedUrl = page.url();
   if (/\/website-login|\/login|signin|captcha/i.test(landedUrl)) {
-    const reason = /captcha/i.test(landedUrl) ? "触发安全验证(captcha)" : "登录态失效被重定向到登录页";
-    session.recordPostError({ status: 401, body: `XHS ${reason}: ${landedUrl}`, url });
-    throw new Error(`小红书 ${reason} — 请到平台卡片重新扫码登录(landed: ${landedUrl})`);
+    session.recordPostError({ status: 401, body: LOGIN_EXPIRED_MESSAGE, url });
+    throw new Error(LOGIN_EXPIRED_MESSAGE);
   }
 
   // 1) DOM-level anti-bot 检测(captcha mask / verify wrap)
   const anti = await detectAntiBot(page);
   if (anti) {
-    session.recordPostError({ status: 403, body: `XHS 风控触发: ${anti}`, url });
-    throw new Error(`小红书风控触发（${anti}），请稍后再试或更换网络`);
+    const status = /captcha/i.test(anti) ? 401 : 403;
+    const message = status === 401 ? LOGIN_EXPIRED_MESSAGE : `小红书风控触发（${anti}），请稍后再试或更换网络`;
+    session.recordPostError({ status, body: message, url });
+    throw new Error(message);
   }
 
   // 2) 提前看登录态 cookie 是否还在 page context(防止 cookie 被 server 清掉但 disk 还有)
   const cookies = await page.cookies(HOST);
   const hasSession = cookies.some((c) => c.name === "web_session" || c.name === "a1");
   if (!hasSession) {
-    session.recordPostError({ status: 401, body: "XHS 搜索时 cookie 已丢失", url });
-    throw new Error("小红书登录态丢失 — 请到平台卡片重新扫码登录");
+    session.recordPostError({ status: 401, body: LOGIN_EXPIRED_MESSAGE, url });
+    throw new Error(LOGIN_EXPIRED_MESSAGE);
   }
   const debugScript = String.raw`
     return (async () => {
@@ -447,8 +456,8 @@ export async function searchUsers(query: string, opts: SearchOpts = {}): Promise
   );
 
   if (debug.hasLoginPrompt) {
-    session.recordPostError({ status: 401, body: `XHS 页面提示需登录: ${debug.bodyPreview}`, url });
-    throw new Error("小红书页面提示需登录 — 请到平台卡片重新扫码登录");
+    session.recordPostError({ status: 401, body: LOGIN_EXPIRED_MESSAGE, url });
+    throw new Error(LOGIN_EXPIRED_MESSAGE);
   }
   if (!debug.authors?.length && debug.htmlLen < 3000) {
     session.recordPostError({ status: 500, body: `XHS 页面异常空 (${debug.htmlLen}B): ${debug.bodyPreview}`, url });

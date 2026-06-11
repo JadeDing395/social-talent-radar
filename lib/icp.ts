@@ -401,7 +401,7 @@ function normalizeDraft(input: ICPInput, draft: IcpDraft): ICP {
   }
 
   return {
-    position: normalizeText(draft.position) ?? input.briefSentence ?? "待确认岗位",
+    position: normalizeText(draft.position) ?? input.briefSentence ?? "",
     jd: normalizeText(draft.jd) ?? "",
     keywords: keywords.length > 0 ? keywords : [input.briefSentence || "招聘画像"],
     education: normalizeEducation(draft.education),
@@ -439,6 +439,13 @@ export async function synthesizeICPForUser(
 
   if (!hasAnyInput) {
     throw new Error("请至少提供一个 ICP 输入来源");
+  }
+  const hasPositionSignal =
+    !!input.briefSentence ||
+    (input.successResumes?.length ?? 0) > 0 ||
+    (input.topPerformerLinks?.length ?? 0) > 0;
+  if (!hasPositionSignal) {
+    throw new Error("请先填写岗位名称或一句话需求");
   }
 
   const company = await fetchCompanyPageContext(input.companyUrl);

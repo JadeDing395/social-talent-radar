@@ -41,7 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 # Puppeteer 持久化用户目录（含登录态 cookie）
-# 注:现在登录态存在 ~/.social-talent-radar/(项目目录外),这里保留旧路径兜底
+# 注:现在登录态存在用户主目录下的项目外 profile 目录,这里保留旧路径兜底
 /.chrome-profile
 /.chrome-profile-weibo
 /.chrome-profile-xhs

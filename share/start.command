@@ -1,5 +1,5 @@
 #!/bin/bash
-# TalentPilot(覇talent) — 本地启动脚本（macOS 双击运行）
+# TalentPilot（觅talent）— 本地启动脚本（macOS 双击运行）
 # 用法：双击 start.command；首次运行会自动 npm install。
 
 set -e

@@ -162,7 +162,7 @@ export default function ScanPage() {
           <div className="flex items-end justify-between gap-6 flex-wrap">
             <div className="min-w-0 flex-1">
               <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400 mb-3 font-medium">
-                Talent Radar · Cross-Platform
+                TalentPilot · Cross-Platform
               </div>
               <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 leading-[1.05]">
                 跨平台美术人才扫描
