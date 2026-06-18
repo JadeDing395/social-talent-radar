@@ -229,7 +229,8 @@ export default function RadarResultsTable({ results, weights = DEFAULT_WEIGHTS, 
 
   const saveOne = async (r: RadarResult) => {
     // 混排场景下,每行用 r.platform 决定 save endpoint;旧用法 platform prop 兜底
-    const apiPath = `${PLATFORMS[platform ?? r.platform].apiPrefix}/save`;
+    const resolvedPlatform = platform ?? r.platform;
+    const apiPath = `${(PLATFORMS[resolvedPlatform] ?? PLATFORMS.artstation).apiPrefix}/save`;
     setSavingSet((prev) => new Set(prev).add(r.platform_user_id));
     try {
       const res = await fetch(apiPath, {

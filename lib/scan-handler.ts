@@ -18,6 +18,7 @@ import {
   PositionBrief,
 } from "./scoring-config";
 import { readDB } from "./db";
+import { PLATFORMS } from "./platforms";
 import { getUserIdFromRequest } from "./userIdentity";
 import { recordUsage } from "./usage";
 import type { Platform } from "./types";
@@ -58,6 +59,7 @@ function send(controller: ReadableStreamDefaultController<Uint8Array>, encoder: 
 }
 
 export async function handleScan(req: NextRequest, adapter: PlatformAdapter): Promise<Response> {
+  const platformLabel = PLATFORMS[adapter.platform].label;
   const userId = getUserIdFromRequest(req);
   let body: ScanBody;
   try {
@@ -87,7 +89,7 @@ export async function handleScan(req: NextRequest, adapter: PlatformAdapter): Pr
 
       try {
         // 0) 检查登录
-        emit({ type: "status", message: `正在检查${adapter.platform === "weibo" ? "微博" : adapter.platform === "xiaohongshu" ? "小红书" : "ArtStation"}登录态...` });
+        emit({ type: "status", message: `正在检查${platformLabel}登录态...` });
         const login = await adapter.checkLogin();
         if (!login.loggedIn) {
           emit({ type: "login_required", message: login.message ?? "未登录" });
@@ -164,9 +166,7 @@ export async function handleScan(req: NextRequest, adapter: PlatformAdapter): Pr
             const msg = err instanceof Error ? err.message : String(err);
             emit({ type: "status", message: `搜索词「${q}」失败：${msg.slice(0, 120)}` });
             if (/风控|captcha|verify|登录态|需登录|cookie/i.test(msg)) {
-              const friendly = adapter.platform === "xiaohongshu" && /登录态|需登录|cookie|captcha/i.test(msg)
-                ? "小红书登录态已失效，请重新登录后再扫描"
-                : `${adapter.platform === "weibo" ? "微博" : adapter.platform === "xiaohongshu" ? "小红书" : "ArtStation"} 抓取被风控阻断：${msg}`;
+              const friendly = `${platformLabel} 抓取被风控阻断：${msg}`;
               emit({ type: "error", message: friendly });
               break;
             }
@@ -178,15 +178,9 @@ export async function handleScan(req: NextRequest, adapter: PlatformAdapter): Pr
 
         if (candidates.length === 0) {
           const last = adapter.getLastError();
-          const xhsLoginExpired = adapter.platform === "xiaohongshu" && (
-            last?.status === 401 ||
-            /captcha|登录态|需登录|cookie/i.test(last?.body ?? "")
-          );
-          const errMsg = xhsLoginExpired
-            ? "小红书登录态已失效，请重新登录后再扫描"
-            : last
+          const errMsg = last
             ? `${adapter.platform} 接口返回 HTTP ${last.status}: ${(last.body ?? "").slice(0, 200)}`
-            : "搜索全部 0 召回。可能 puppeteer session 未拿到登录态。";
+            : "搜索全部 0 召回。可能搜索词过窄或平台接口暂时无结果。";
           emit({ type: "error", message: errMsg });
           emit({
             type: "done", fetched: 0, analyzed: 0, kept: 0, target: desired,

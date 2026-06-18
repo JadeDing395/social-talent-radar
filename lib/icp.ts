@@ -29,8 +29,9 @@ interface IcpDraft {
   companyInsight: string;
   channelStrategy?: {
     artstation?: string[];
-    weibo?: string[];
-    xiaohongshu?: string[];
+    github?: string[];
+    bilibili?: string[];
+    behance?: string[];
   };
   reasoning: string;
 }
@@ -74,8 +75,9 @@ const ICP_TOOL_SCHEMA = {
       additionalProperties: false,
       properties: {
         artstation: { type: "array", items: { type: "string" } },
-        weibo: { type: "array", items: { type: "string" } },
-        xiaohongshu: { type: "array", items: { type: "string" } },
+        github: { type: "array", items: { type: "string" } },
+        bilibili: { type: "array", items: { type: "string" } },
+        behance: { type: "array", items: { type: "string" } },
       },
     },
     reasoning: { type: "string" },
@@ -277,7 +279,7 @@ ${JSON.stringify(DEFAULT_WEIGHTS)}
 - personaTraits：5-8 条人才特征
 - competitorTargeting：3-8 个建议公司/团队名，仅作建议，不可伪装成事实
 - companyInsight：1 段中文总结你对该公司/项目/团队风格与可能对标方向的判断，只用于理解公司和找对标，不是 JD
-- channelStrategy：分别给 artstation / weibo / xiaohongshu 建议关键词，各 3-8 条
+- channelStrategy：分别给 artstation / github / bilibili / behance 建议关键词，各 3-8 条
 - reasoning：1 段中文解释，必须明确写出“竞品建议必须人工确认”，并点明 companyInsight 只是 AI 推断，不是官网 JD
 
 只返回结构化结果，不要加额外说明。`;
@@ -412,8 +414,9 @@ function normalizeDraft(input: ICPInput, draft: IcpDraft): ICP {
     companyInsight,
     channelStrategy: {
       artstation: normalizeArray(channelStrategy.artstation, [], 8),
-      weibo: normalizeArray(channelStrategy.weibo, [], 8),
-      xiaohongshu: normalizeArray(channelStrategy.xiaohongshu, [], 8),
+      github: normalizeArray(channelStrategy.github, [], 8),
+      bilibili: normalizeArray(channelStrategy.bilibili, [], 8),
+      behance: normalizeArray(channelStrategy.behance, [], 8),
     },
     sourceInputs: input,
     reasoning,

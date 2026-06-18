@@ -199,7 +199,7 @@ export default function CandidatesPage() {
               </p>
             </div>
             <div className="segmented">
-              {(["all", "artstation", "weibo", "xiaohongshu"] as const).map((p) => (
+              {(["all", ...PLATFORM_LIST.map((p) => p.id)] as const).map((p) => (
                 <button
                   key={p}
                   onClick={() => setPlatformFilter(p)}
@@ -343,7 +343,7 @@ export default function CandidatesPage() {
                               </div>
                             )}
                             {/* 平台徽章：头像右下角 */}
-                            {c.source && c.source !== "manual" && (
+                            {c.source && c.source !== "manual" && PLATFORMS[c.source as Platform] && (
                               <span
                                 className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full ring-2 ring-white flex items-center justify-center text-[8px] font-bold"
                                 style={{ backgroundColor: PLATFORMS[c.source as Platform].color.brand, color: "white" }}
@@ -402,7 +402,7 @@ export default function CandidatesPage() {
                         <StarRating value={c.rating} onChange={(r) => handleRating(c, r)} />
                       </td>
                       <td className="px-4 py-3.5">
-                        {c.source && c.source !== "manual" ? (
+                        {c.source && c.source !== "manual" && PLATFORMS[c.source as Platform] ? (
                           <span
                             className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium"
                             style={{ backgroundColor: PLATFORMS[c.source as Platform].badge.bg, color: PLATFORMS[c.source as Platform].badge.fg }}
@@ -410,7 +410,7 @@ export default function CandidatesPage() {
                             {PLATFORMS[c.source as Platform].label}
                           </span>
                         ) : (
-                          <span className="text-xs text-zinc-300">手动</span>
+                          <span className="text-xs text-zinc-300">{c.source && c.source !== "manual" ? c.source : "手动"}</span>
                         )}
                       </td>
                       <td className="px-4 py-3.5">
@@ -582,13 +582,13 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
       </p>
       <div className="flex items-center gap-2">
         <Link
-          href="/weibo"
+          href="/scan"
           className="px-3.5 py-2 text-sm font-medium bg-slate-900 text-white rounded-lg hover:bg-slate-800 shadow-sm transition-colors flex items-center gap-1.5"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          去微博扫描
+          去雷达扫描
         </Link>
         <button
           onClick={onAdd}

@@ -1,5 +1,5 @@
 /**
- * 微博 / 小红书共用的归一化候选人类型。
+ * 多平台共用的归一化候选人类型。
  * 各平台 puppeteer 模块抓完原始数据后转成 NormalizedCandidate，再喂给评分层。
  */
 
@@ -30,66 +30,6 @@ export interface NormalizedCandidate {
   verifiedReason: string | null;
   posts: NormalizedPost[];
   rawGender?: string | null;
-}
-
-// 微博原始结构
-
-export interface WBUser {
-  uid: string;
-  screenName: string;
-  avatarUrl: string;
-  gender?: string;
-  location?: string;
-  description?: string;
-  followersCount: number;
-  friendsCount: number;
-  statusesCount: number;
-  verified: boolean;
-  verifiedReason?: string;
-  profileUrl: string;
-}
-
-export interface WBPost {
-  mid: string;
-  text: string;
-  createdAt: string;
-  picUrls: string[];
-  topics: string[];
-  repostsCount: number;
-  commentsCount: number;
-  attitudesCount: number;
-}
-
-// 小红书原始结构
-
-export interface XHSUser {
-  userId: string;
-  nickname: string;
-  avatarUrl: string;
-  desc: string;
-  ipLocation?: string;
-  gender?: string;
-  fansCount: number;
-  followsCount: number;
-  notesCount: number;
-  redOfficial?: boolean;
-  redOfficialVerifyContent?: string;
-  profileUrl: string;
-}
-
-export interface XHSNote {
-  noteId: string;
-  title: string;
-  desc: string;
-  coverUrl: string;
-  imageList: string[];
-  type: "normal" | "video";
-  topics: string[];
-  likedCount: number;
-  collectedCount: number;
-  commentCount: number;
-  publishTime: string;
-  url?: string;
 }
 
 // 登录态检查响应

@@ -1,4 +1,4 @@
-export type Platform = "weibo" | "xiaohongshu" | "artstation";
+export type Platform = "artstation" | "github" | "bilibili" | "behance";
 
 export type CandidateSource = Platform | "manual" | null;
 

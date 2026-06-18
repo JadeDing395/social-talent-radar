@@ -10,6 +10,7 @@ interface Props {
   disabled?: boolean;
   hint?: string;
   allowCustom?: boolean;
+  placeholder?: string;
 }
 
 /**
@@ -26,6 +27,7 @@ export default function ChipSelect({
   disabled = false,
   hint,
   allowCustom = true,
+  placeholder = "+ 自定义",
 }: Props) {
   const [customInput, setCustomInput] = useState("");
   const selected = new Set(value);
@@ -106,7 +108,7 @@ export default function ChipSelect({
                   addCustom();
                 }
               }}
-              placeholder="+ 自定义"
+              placeholder={placeholder}
               className="px-1.5 py-0.5 text-xs border border-dashed border-slate-300 rounded-md w-20 focus:outline-none focus:ring-1 focus:ring-[#0d4f3c]/30 focus:w-32 transition-all"
             />
           </div>

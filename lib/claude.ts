@@ -18,6 +18,7 @@ import {
   AiProtocol,
 } from "./scoring-config";
 import { inferProtocol, supportsVision } from "./models";
+import { PLATFORMS } from "./platforms";
 import { recordUsage, UsageDelta } from "./usage";
 import type { NormalizedCandidate } from "./social-types";
 import type { Platform } from "./types";
@@ -108,7 +109,7 @@ const POSITION_TOOL_SCHEMA = {
     search_queries: {
       type: "array",
       items: { type: "string" },
-      description: "6-10 个用于在微博/小红书搜索的中文短语；可含话题标签 #xxx#，例如：原画师 招聘 / 插画约稿 / 角色设计 / 二次元立绘 / #原画师# / #插画师#",
+      description: "6-10 个用于多平台搜索的短语；可按平台使用中英文关键词、技术栈、作品类型或话题标签",
     },
   },
   required: ["understanding", "key_skills", "artwork_features", "search_queries"],
@@ -116,7 +117,7 @@ const POSITION_TOOL_SCHEMA = {
 
 const POSITION_TOOL: Anthropic.Tool = {
   name: "describe_position",
-  description: "对游戏美术岗位进行专业理解，输出技能、作品特征和微博/小红书搜索词（中文为主）",
+  description: "对岗位进行专业理解，输出技能、作品特征和多平台搜索词",
   input_schema: POSITION_TOOL_SCHEMA,
 };
 
@@ -256,6 +257,60 @@ ${base}
 - 短语要够具体，避免单字或太宽泛`;
 }
 
+function githubPromptBody(base: string): string {
+  return `请对以下技术岗位进行专业理解，并产出在【GitHub】上搜索开发者所需的关键词。
+
+${base}
+
+## search_queries 设计原则
+
+- 优先使用技术栈、框架、引擎、图形/游戏开发关键词，例如 \`Unity C#\`、\`Unreal Engine C++\`、\`rendering engineer\`、\`WebGL\`
+- 可以组合岗位方向与语言/领域，例如 \`game server golang\`、\`graphics Vulkan\`、\`toolchain python\`
+- 避免 \`hiring\`、\`job\`、\`招聘\` 等 HR 词
+
+## 要求
+
+- 6-10 条短语
+- 中英文均可，但 GitHub 以英文技术关键词优先
+- 关键词要能命中用户、仓库描述、topic 或 README 中常见表达`;
+}
+
+function bilibiliPromptBody(base: string): string {
+  return `请对以下内容/创作岗位进行专业理解，并产出在【Bilibili】上搜索 UP 主所需的关键词。
+
+${base}
+
+## search_queries 设计原则
+
+- 优先使用视频标题、分区、创作方向和作品类型，例如 \`游戏美术教程\`、\`角色设计过程\`、\`Unity 教程\`、\`游戏剪辑\`
+- 可结合岗位题材、风格、工具或目标受众
+- 避免 \`招聘\`、\`求职\`、\`应聘\` 等 HR 词
+
+## 要求
+
+- 6-10 条中文短语
+- 至少 3 条体现内容方向或视频形态
+- 短语要像 UP 主真实标题/简介会使用的表达`;
+}
+
+function behancePromptBody(base: string): string {
+  return `请对以下设计岗位进行专业理解，并产出在【Behance】上搜索设计师作品所需的关键词。
+
+${base}
+
+## search_queries 设计原则
+
+- 优先使用作品类型、设计领域和行业关键词，例如 \`UI design\`、\`game UI\`、\`brand identity\`、\`visual design\`
+- 可以结合风格、工具或媒介，例如 \`motion design\`、\`Figma UI kit\`、\`illustration system\`
+- 避免 \`hiring\`、\`job\`、\`招聘\` 等 HR 词
+
+## 要求
+
+- 6-10 条短语
+- 英文关键词优先，可混入中文
+- 至少 3 条是作品/设计产出物描述`;
+}
+
 function buildPositionUserMessage(
   platform: Platform,
   position: string,
@@ -265,8 +320,9 @@ function buildPositionUserMessage(
   themes: string[],
 ): string {
   const base = buildPositionBase(position, jd, artStyles, tools, themes);
-  if (platform === "weibo") return weiboPromptBody(base);
-  if (platform === "xiaohongshu") return xhsPromptBody(base);
+  if (platform === "github") return githubPromptBody(base);
+  if (platform === "bilibili") return bilibiliPromptBody(base);
+  if (platform === "behance") return behancePromptBody(base);
   return artstationPromptBody(base);
 }
 
@@ -628,7 +684,7 @@ function buildCandidateUserText(
   });
 
   return `## 本次招聘需求
-平台：${candidate.platform === "weibo" ? "微博" : candidate.platform === "xiaohongshu" ? "小红书" : "ArtStation"}
+平台：${PLATFORMS[candidate.platform].label}
 岗位：${scanParams.position}
 JD摘要：${scanParams.jd || "（未提供）"}
 美术风格：${scanParams.artStyles.length > 0 ? scanParams.artStyles.join("、") : "（未指定）"}
@@ -677,7 +733,7 @@ async function fetchImageAsBase64(url: string, maxBytes = 5 * 1024 * 1024): Prom
     const res = await fetch(url, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-        Referer: "https://weibo.com/",
+        Referer: "https://www.artstation.com/",
       },
     });
     if (!res.ok) return null;
@@ -718,7 +774,7 @@ export async function scoreCandidate(
   const protocol = resolveProtocol(aiConfig, model);
   const region = detectRegion(candidate);
 
-  const platformLabel = candidate.platform === "weibo" ? "微博" : candidate.platform === "xiaohongshu" ? "小红书" : "ArtStation";
+  const platformLabel = PLATFORMS[candidate.platform].label;
   const briefText = `岗位理解：${positionBrief.understanding}
 核心技能：${positionBrief.key_skills.join("、")}
 作品特征：${positionBrief.artwork_features.join("、")}`;

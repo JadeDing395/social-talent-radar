@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
 import { motion, AnimatePresence } from "framer-motion";
 import BrandHeader, { BrandMark } from "@/components/BrandHeader";
 import IcpFeedPanel from "@/components/IcpFeedPanel";
@@ -25,6 +26,73 @@ import { DEFAULT_WEIGHTS } from "@/lib/scoring-config";
 
 const OUTREACH_ADV_STORAGE = "radar-outreach-company-advantages";
 type ResultPlatformFilter = "all" | Platform;
+
+// GSAP 入场动画 Hero
+function HeroSection({ hasApiKey, focusPlatform, isAnyScanning }: {
+  hasApiKey: boolean | null;
+  focusPlatform: Platform | null;
+  isAnyScanning: boolean;
+}) {
+  const heroRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    const tl = gsap.timeline();
+    tl.fromTo(el.querySelector(".hero-eyebrow"),
+      { autoAlpha: 0, y: -8 },
+      { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" },
+    )
+    .fromTo(el.querySelector(".hero-title"),
+      { autoAlpha: 0, y: 16 },
+      { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out" },
+      "-=0.15",
+    )
+    .fromTo(el.querySelector(".hero-sub"),
+      { autoAlpha: 0, y: 10 },
+      { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" },
+      "-=0.2",
+    )
+    .fromTo(el.querySelector(".hero-mark"),
+      { autoAlpha: 0, scale: 0.85 },
+      { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(1.4)" },
+      "-=0.4",
+    );
+  }, []);
+
+  return (
+    <header ref={heroRef} className="relative pt-6 pb-2">
+      <div className="flex items-end justify-between gap-6 flex-wrap">
+        <div className="min-w-0 flex-1">
+          <div className="hero-eyebrow text-[11px] uppercase tracking-[0.2em] text-slate-400 mb-3 font-medium" style={{ opacity: 0 }}>
+            TalentCompass · Multi-Platform
+          </div>
+          <h1 className="hero-title text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 leading-[1.05]" style={{ opacity: 0 }}>
+            跨平台人才雷达
+          </h1>
+          <p className="hero-sub text-base text-slate-500 mt-4 max-w-xl" style={{ opacity: 0 }}>
+            一次填表 · 多平台并发扫描 · AI 智能评分 · 结果按总分混排
+            {hasApiKey === false && (
+              <span className="ml-2 text-amber-600">· 请先在「AI 设置」中配置 API Key</span>
+            )}
+          </p>
+          {focusPlatform && (
+            <div className="mt-4 inline-flex items-center gap-2 text-[11px] text-slate-500">
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PLATFORMS[focusPlatform].color.brand }} />
+              当前聚焦平台：{PLATFORMS[focusPlatform].label} · 整页主色已联动
+            </div>
+          )}
+        </div>
+        <div className="hero-mark hidden md:flex flex-col items-center gap-2 flex-shrink-0" style={{ opacity: 0 }}>
+          <BrandMark size={96} spinning={isAnyScanning} color="var(--color-brand)" />
+          <div className="text-[10px] text-slate-400 tabular-nums">
+            {isAnyScanning ? "扫描中" : "Ready"}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
 
 export default function ScanPage() {
   const {
@@ -179,39 +247,7 @@ export default function ScanPage() {
 
       <main className="px-6 py-8 max-w-[1280px] mx-auto w-full flex-1 space-y-8">
         {/* ─── Hero ─── */}
-        <header className="relative pt-6 pb-2">
-          <div className="flex items-end justify-between gap-6 flex-wrap">
-            <div className="min-w-0 flex-1">
-              <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400 mb-3 font-medium">
-                TalentPilot · Cross-Platform
-              </div>
-              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 leading-[1.05]">
-                跨平台美术人才扫描
-              </h1>
-              <p className="text-base text-slate-500 mt-4 max-w-xl">
-                一次填表 · 多平台并发抓取 · AI 评分 · 结果按总分混排
-                {hasApiKey === false && (
-                  <span className="ml-2 text-amber-600">· 请先在「AI 设置」中配置 API Key</span>
-                )}
-              </p>
-              {focusPlatform && (
-                <div className="mt-4 inline-flex items-center gap-2 text-[11px] text-slate-500">
-                  <span
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: PLATFORMS[focusPlatform].color.brand }}
-                  />
-                  当前聚焦平台:{PLATFORMS[focusPlatform].label} · 整页主色已联动
-                </div>
-              )}
-            </div>
-            <div className="hidden md:flex flex-col items-center gap-2 flex-shrink-0">
-              <BrandMark size={96} spinning={isAnyScanning} color="var(--color-brand)" />
-              <div className="text-[10px] text-slate-400 tabular-nums">
-                {isAnyScanning ? "扫描中" : "Ready"}
-              </div>
-            </div>
-          </div>
-        </header>
+        <HeroSection hasApiKey={hasApiKey} focusPlatform={focusPlatform} isAnyScanning={isAnyScanning} />
 
         <IcpFeedPanel onApply={setAppliedIcp} />
 

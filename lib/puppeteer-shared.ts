@@ -5,9 +5,7 @@
  * 每个平台（微博/小红书）各自创建一个 session 实例，独立 profile 目录。
  */
 
-import vanillaPuppeteer, { Browser, Page } from "puppeteer";
-import puppeteerExtra from "puppeteer-extra";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import puppeteer, { Browser, Page } from "puppeteer";
 import path from "path";
 import os from "os";
 import fs from "fs";
@@ -22,16 +20,6 @@ export function profilePath(name: string): string {
   const legacyProfileRoot = [".social", "talent", "radar"].join("-");
   return path.join(os.homedir(), legacyProfileRoot, name);
 }
-
-// Stealth plugin —— 自动修补 30+ 处 headless Chrome fingerprint 泄漏
-// (navigator.webdriver / chrome.runtime / permissions / plugins / WebGL vendor 等),
-// 让 XHS 等强反爬平台识别不出 puppeteer。
-// 注册一次,所有 launch 调用都会自动应用。
-puppeteerExtra.use(StealthPlugin());
-
-// puppeteer-extra 不直接暴露 puppeteer 类型,但内部就是 wrapper,launch 签名兼容。
-// 这里把它做成跟原 puppeteer 同 shape 的实例。
-const puppeteer = puppeteerExtra as unknown as typeof vanillaPuppeteer;
 
 export const DEFAULT_HEADLESS = process.env.PUPPETEER_HEADLESS !== "false";
 

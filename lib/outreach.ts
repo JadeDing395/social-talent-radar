@@ -6,6 +6,7 @@ import {
   AiProtocol,
 } from "./scoring-config";
 import { inferProtocol } from "./models";
+import { PLATFORMS } from "./platforms";
 import { recordUsage, UsageDelta } from "./usage";
 
 export interface OutreachDraft {
@@ -102,10 +103,12 @@ function recordOpenAI(
 
 function buildPrompt({ candidate, jd, position, companyAdvantages }: DraftArgs): string {
   const isArtStation = candidate.platform === "artstation";
-  const platformTone = candidate.platform === "weibo"
-    ? "微博私信，口吻自然一点，像资深招聘官一对一沟通，不要群发感。"
-    : candidate.platform === "xiaohongshu"
-    ? "小红书私信，口吻轻一些，但仍然专业真诚。"
+  const platformTone = candidate.platform === "github"
+    ? "GitHub 站内信息较技术化，可用专业、简洁的工程招聘口吻，避免营销感。"
+    : candidate.platform === "bilibili"
+    ? "Bilibili 私信口吻可以轻一些，但仍然专业真诚。"
+    : candidate.platform === "behance"
+    ? "Behance 站内或邮件风格，可用专业英文，也可中英混合，但要克制专业。"
     : "ArtStation 站内或邮件风格，可用专业英文，也可中英混合，但要克制专业。";
 
   return `你是一名专业招聘官，要给一位具体候选人写一段“千人千面”的初次触达开场白。
@@ -126,7 +129,7 @@ ${platformTone}
 
 ## 候选人画像
 - 候选人姓名：${candidate.name}
-- 平台：${candidate.platform}
+- 平台：${PLATFORMS[candidate.platform].label}
 - 标题 / bio：${candidate.headline || "（无）"}
 - 当前项目：${candidate.current_project || "（未知）"}
 - 推断岗位：${candidate.inferred_position}

@@ -1,0 +1,839 @@
+{
+  "candidates": [
+    {
+      "id": 1,
+      "name": "Reika Z",
+      "email": null,
+      "phone": null,
+      "location": null,
+      "portfolio": "https://www.artstation.com/reikasyuu",
+      "skills": [
+        "现🐧腾讯TENCENT",
+        "前网易NETEASE-资深角色原画师"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [
+        41,
+        9
+      ],
+      "rating": 4,
+      "favorite": false,
+      "avatarUrl": "https://cdna.artstation.com/p/users/avatars/000/573/582/medium/966b8d4e6b0e5453be78672657600c85.jpg?1692259378",
+      "createdAt": "2026-04-29T03:59:38.067Z",
+      "updatedAt": "2026-04-29T07:41:29.697Z",
+      "platformUserId": "reikasyuu",
+      "profileUrl": "https://www.artstation.com/reikasyuu",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 2,
+      "name": "枯死的伞菇",
+      "email": null,
+      "phone": null,
+      "location": null,
+      "portfolio": "https://www.artstation.com/kuside_sangu",
+      "skills": [
+        "onemt"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [],
+      "rating": 4,
+      "favorite": false,
+      "avatarUrl": "https://cdnb.artstation.com/p/users/avatars/000/506/537/medium/854ed604edecb9887005a646ea82d87d.jpg?1548040269",
+      "createdAt": "2026-04-29T03:59:38.071Z",
+      "updatedAt": "2026-04-29T03:59:38.071Z",
+      "platformUserId": "kuside_sangu",
+      "profileUrl": "https://www.artstation.com/kuside_sangu",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 3,
+      "name": "程子-SUPER DOPE",
+      "email": "17614875968@139.com",
+      "phone": null,
+      "location": null,
+      "portfolio": "https://www.artstation.com/cz-superdope",
+      "skills": [
+        "17614875968@139.com"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [],
+      "rating": 4,
+      "favorite": false,
+      "avatarUrl": "https://cdnb.artstation.com/p/users/avatars/002/244/999/medium/a1d2837b5d93afcead28e2b368bc7bde.jpg?1629354022",
+      "createdAt": "2026-04-29T03:59:38.079Z",
+      "updatedAt": "2026-04-29T03:59:38.079Z",
+      "platformUserId": "cz-superdope",
+      "profileUrl": "https://www.artstation.com/cz-superdope",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 4,
+      "name": "最野的狗",
+      "email": null,
+      "phone": "1532914455",
+      "location": null,
+      "portfolio": "https://www.artstation.com/xu-haoyu",
+      "skills": [
+        "我爱画画1532914455"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [],
+      "rating": 3,
+      "favorite": false,
+      "avatarUrl": "https://cdna.artstation.com/p/users/avatars/002/007/972/medium/1bfbbec9b1d179e2908962765af4a2d8.jpg?1590753076",
+      "createdAt": "2026-04-29T03:59:38.090Z",
+      "updatedAt": "2026-04-29T03:59:38.090Z",
+      "platformUserId": "xu-haoyu",
+      "profileUrl": "https://www.artstation.com/xu-haoyu",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 5,
+      "name": "Chan Xing",
+      "email": null,
+      "phone": null,
+      "location": null,
+      "portfolio": "https://www.artstation.com/missgrape",
+      "skills": [
+        "freelance"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [],
+      "rating": 3,
+      "favorite": false,
+      "avatarUrl": "https://cdnb.artstation.com/p/users/avatars/000/795/265/medium/58e6a01811af663efd502322d6f8f548.jpg?1530420349",
+      "createdAt": "2026-04-29T03:59:38.095Z",
+      "updatedAt": "2026-04-29T03:59:38.095Z",
+      "platformUserId": "missgrape",
+      "profileUrl": "https://www.artstation.com/missgrape",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 6,
+      "name": "-WuWu-",
+      "email": null,
+      "phone": "QQ群:821524689",
+      "location": null,
+      "portfolio": "https://www.artstation.com/wuwu1688",
+      "skills": [
+        "821524689"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        20
+      ],
+      "rating": 3,
+      "favorite": false,
+      "avatarUrl": "https://cdna.artstation.com/p/users/avatars/001/400/132/medium/1de3fafe51a36c41a4e10bc11b97f4ca.jpg?1660307680",
+      "createdAt": "2026-04-29T06:02:08.669Z",
+      "updatedAt": "2026-04-29T06:03:04.916Z",
+      "platformUserId": "wuwu1688",
+      "profileUrl": "https://www.artstation.com/wuwu1688",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 7,
+      "name": "Li Qiaochu",
+      "email": null,
+      "phone": "QQ 304359701",
+      "location": null,
+      "portfolio": "https://www.artstation.com/zhugecunfu",
+      "skills": [
+        "工作联系QQ",
+        "304359701"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [
+        9,
+        15,
+        2,
+        16,
+        17,
+        18,
+        19
+      ],
+      "rating": 4,
+      "favorite": false,
+      "avatarUrl": "https://cdnb.artstation.com/p/users/avatars/000/325/265/medium/28d929b9ea0d186cae2c906da50b2b93.jpg?1636257355",
+      "createdAt": "2026-04-29T06:02:14.367Z",
+      "updatedAt": "2026-04-29T06:02:14.367Z",
+      "platformUserId": "zhugecunfu",
+      "profileUrl": "https://www.artstation.com/zhugecunfu",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 8,
+      "name": "wind wind",
+      "email": null,
+      "phone": null,
+      "location": null,
+      "portfolio": "https://www.artstation.com/pastwind",
+      "skills": [
+        "VFX"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "rating": 4,
+      "favorite": false,
+      "avatarUrl": "https://cdna.artstation.com/p/users/avatars/001/029/592/medium/d71d7f1182ddec9bde9ebc4d71966695.jpg?1554099463",
+      "createdAt": "2026-04-29T07:13:15.072Z",
+      "updatedAt": "2026-04-29T07:13:15.072Z",
+      "platformUserId": "pastwind",
+      "profileUrl": "https://www.artstation.com/pastwind",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 9,
+      "name": "jordon huang",
+      "email": null,
+      "phone": null,
+      "location": null,
+      "portfolio": "https://www.artstation.com/jdhuang",
+      "skills": [
+        "Senior",
+        "VFX",
+        "Artist@Tencent",
+        "Games"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "rating": 4,
+      "favorite": false,
+      "avatarUrl": "https://cdnb.artstation.com/p/users/avatars/001/830/719/medium/405fa2d3fb99963cd3900ea835ad584a.jpg?1583208949",
+      "createdAt": "2026-04-29T07:13:24.135Z",
+      "updatedAt": "2026-04-29T07:13:24.135Z",
+      "platformUserId": "jdhuang",
+      "profileUrl": "https://www.artstation.com/jdhuang",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 10,
+      "name": "MXN",
+      "email": null,
+      "phone": null,
+      "location": null,
+      "portfolio": "https://www.artstation.com/omxno",
+      "skills": [
+        "VFX",
+        "Artist"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [
+        36,
+        31,
+        37,
+        38,
+        39,
+        22,
+        40
+      ],
+      "rating": 4,
+      "favorite": false,
+      "avatarUrl": "https://cdnb.artstation.com/p/users/avatars/001/668/305/medium/13130cbafb99565fd2909b8a8128abbc.jpg?1663127480",
+      "createdAt": "2026-04-29T07:13:28.331Z",
+      "updatedAt": "2026-04-29T07:13:28.331Z",
+      "platformUserId": "omxno",
+      "profileUrl": "https://www.artstation.com/omxno",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 11,
+      "name": "ounijiang",
+      "email": null,
+      "phone": null,
+      "location": null,
+      "portfolio": "https://www.artstation.com/ounijiang",
+      "skills": [
+        "freelance",
+        "artist"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [
+        42,
+        43,
+        15,
+        44,
+        45,
+        13,
+        46
+      ],
+      "rating": 4,
+      "favorite": false,
+      "avatarUrl": "https://www.gravatar.com/avatar/5f771086486ea7ffdf2803aa085e2990c3d85fb9e224c90d8aaa951f0d75e3cb.jpg?size=240&d=https%3A%2F%2Fwww.artstation.com%2Fassets%2Fdefault_avatar.jpg",
+      "createdAt": "2026-04-30T01:27:17.745Z",
+      "updatedAt": "2026-04-30T01:27:17.745Z",
+      "platformUserId": "ounijiang",
+      "profileUrl": "https://www.artstation.com/ounijiang",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 12,
+      "name": "睡了喵",
+      "email": null,
+      "phone": null,
+      "location": null,
+      "portfolio": "https://www.artstation.com/calen3333",
+      "skills": [
+        "freelance"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [
+        42,
+        43,
+        47,
+        48,
+        13,
+        46,
+        49
+      ],
+      "rating": 3,
+      "favorite": false,
+      "avatarUrl": "https://www.gravatar.com/avatar/e6cc389829db425174c4c78709dba9de613ede2bd6b22c85b1856f7e0730a814.jpg?size=240&d=https%3A%2F%2Fwww.artstation.com%2Fassets%2Fdefault_avatar.jpg",
+      "createdAt": "2026-04-30T01:29:07.783Z",
+      "updatedAt": "2026-04-30T01:29:07.783Z",
+      "platformUserId": "calen3333",
+      "profileUrl": "https://www.artstation.com/calen3333",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    },
+    {
+      "id": 13,
+      "name": "Wang.ZA",
+      "email": null,
+      "phone": null,
+      "location": null,
+      "portfolio": "https://www.artstation.com/wangza",
+      "skills": [
+        "Hope",
+        "everyone",
+        "likes"
+      ],
+      "available": true,
+      "source": "artstation",
+      "stageId": 1,
+      "tagIds": [
+        42,
+        43,
+        15,
+        50,
+        51,
+        13
+      ],
+      "rating": 3,
+      "favorite": false,
+      "avatarUrl": "https://cdna.artstation.com/p/users/avatars/002/476/996/medium/fc792ee452d7a3e84fa77a45cb448e83.jpg?1692427170",
+      "createdAt": "2026-04-30T01:29:53.116Z",
+      "updatedAt": "2026-04-30T01:29:53.116Z",
+      "platformUserId": "wangza",
+      "profileUrl": "https://www.artstation.com/wangza",
+      "followersCount": null,
+      "postsCount": null,
+      "ipLocation": null,
+      "verified": false,
+      "verifiedReason": null
+    }
+  ],
+  "stages": [
+    {
+      "id": 1,
+      "name": "待初筛",
+      "order": 1,
+      "color": "#94a3b8"
+    },
+    {
+      "id": 2,
+      "name": "初筛通过",
+      "order": 2,
+      "color": "#3b82f6"
+    },
+    {
+      "id": 3,
+      "name": "面试中",
+      "order": 3,
+      "color": "#f59e0b"
+    },
+    {
+      "id": 4,
+      "name": "offer",
+      "order": 4,
+      "color": "#8b5cf6"
+    },
+    {
+      "id": 5,
+      "name": "已录用",
+      "order": 5,
+      "color": "#22c55e"
+    },
+    {
+      "id": 6,
+      "name": "已拒绝",
+      "order": 6,
+      "color": "#ef4444"
+    }
+  ],
+  "tags": [
+    {
+      "id": 1,
+      "name": "插画",
+      "color": "#f472b6"
+    },
+    {
+      "id": 2,
+      "name": "概念设计",
+      "color": "#a78bfa"
+    },
+    {
+      "id": 3,
+      "name": "3D建模",
+      "color": "#60a5fa"
+    },
+    {
+      "id": 4,
+      "name": "UI/UX",
+      "color": "#34d399"
+    },
+    {
+      "id": 5,
+      "name": "平面设计",
+      "color": "#fbbf24"
+    },
+    {
+      "id": 6,
+      "name": "动效",
+      "color": "#f87171"
+    },
+    {
+      "id": 7,
+      "name": "摄影",
+      "color": "#94a3b8"
+    },
+    {
+      "id": 8,
+      "name": "视频剪辑",
+      "color": "#fb923c"
+    },
+    {
+      "id": 9,
+      "name": "角色原画",
+      "color": "#84cc16"
+    },
+    {
+      "id": 10,
+      "name": "卡通奇幻",
+      "color": "#ec4899"
+    },
+    {
+      "id": 11,
+      "name": "半厚涂",
+      "color": "#8b5cf6"
+    },
+    {
+      "id": 12,
+      "name": "废土题材",
+      "color": "#3b82f6"
+    },
+    {
+      "id": 13,
+      "name": "中级",
+      "color": "#10b981"
+    },
+    {
+      "id": 14,
+      "name": "中国区",
+      "color": "#eab308"
+    },
+    {
+      "id": 15,
+      "name": "卡通风格",
+      "color": "#f472b6"
+    },
+    {
+      "id": 16,
+      "name": "奇幻题材",
+      "color": "#a78bfa"
+    },
+    {
+      "id": 17,
+      "name": "资深",
+      "color": "#60a5fa"
+    },
+    {
+      "id": 18,
+      "name": "Riot系",
+      "color": "#34d399"
+    },
+    {
+      "id": 19,
+      "name": "留QQ",
+      "color": "#fbbf24"
+    },
+    {
+      "id": 20,
+      "name": "欧美卡通",
+      "color": "#f87171"
+    },
+    {
+      "id": 21,
+      "name": "VFX特效",
+      "color": "#94a3b8"
+    },
+    {
+      "id": 22,
+      "name": "实时渲染",
+      "color": "#fb923c"
+    },
+    {
+      "id": 23,
+      "name": "英雄联盟系",
+      "color": "#22d3ee"
+    },
+    {
+      "id": 24,
+      "name": "资深级",
+      "color": "#84cc16"
+    },
+    {
+      "id": 25,
+      "name": "写实风格",
+      "color": "#ec4899"
+    },
+    {
+      "id": 26,
+      "name": "拳头外包",
+      "color": "#8b5cf6"
+    },
+    {
+      "id": 27,
+      "name": "皮肤特效",
+      "color": "#3b82f6"
+    },
+    {
+      "id": 28,
+      "name": "特效制作",
+      "color": "#10b981"
+    },
+    {
+      "id": 29,
+      "name": "资深水平",
+      "color": "#eab308"
+    },
+    {
+      "id": 30,
+      "name": "腾讯系",
+      "color": "#f472b6"
+    },
+    {
+      "id": 31,
+      "name": "二次元特效",
+      "color": "#a78bfa"
+    },
+    {
+      "id": 32,
+      "name": "写实特效",
+      "color": "#60a5fa"
+    },
+    {
+      "id": 33,
+      "name": "材质光影",
+      "color": "#34d399"
+    },
+    {
+      "id": 34,
+      "name": "武器特效",
+      "color": "#fbbf24"
+    },
+    {
+      "id": 35,
+      "name": "在职状态",
+      "color": "#f87171"
+    },
+    {
+      "id": 36,
+      "name": "特效美术",
+      "color": "#94a3b8"
+    },
+    {
+      "id": 37,
+      "name": "粒子系统",
+      "color": "#fb923c"
+    },
+    {
+      "id": 38,
+      "name": "PV制作",
+      "color": "#22d3ee"
+    },
+    {
+      "id": 39,
+      "name": "中级偏资深",
+      "color": "#84cc16"
+    },
+    {
+      "id": 40,
+      "name": "引擎特效",
+      "color": "#ec4899"
+    },
+    {
+      "id": 41,
+      "name": "古风",
+      "color": "#8b5cf6"
+    },
+    {
+      "id": 42,
+      "name": "美宣插画",
+      "color": "#3b82f6"
+    },
+    {
+      "id": 43,
+      "name": "二次元",
+      "color": "#10b981"
+    },
+    {
+      "id": 44,
+      "name": "角色KV",
+      "color": "#eab308"
+    },
+    {
+      "id": 45,
+      "name": "网易系",
+      "color": "#f472b6"
+    },
+    {
+      "id": 46,
+      "name": "自由职业",
+      "color": "#a78bfa"
+    },
+    {
+      "id": 47,
+      "name": "厚涂",
+      "color": "#60a5fa"
+    },
+    {
+      "id": 48,
+      "name": "卡通渲染",
+      "color": "#34d399"
+    },
+    {
+      "id": 49,
+      "name": "可能看机会",
+      "color": "#fbbf24"
+    },
+    {
+      "id": 50,
+      "name": "叙事插画",
+      "color": "#f87171"
+    },
+    {
+      "id": 51,
+      "name": "同人向",
+      "color": "#94a3b8"
+    }
+  ],
+  "notes": [],
+  "history": [
+    {
+      "id": 1,
+      "candidateId": 1,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 82 分（较高匹配） · 岗位：2D角色原画 · 求职意向：未表明 · 当前：腾讯TENCENT",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-29T03:59:38.067Z"
+    },
+    {
+      "id": 2,
+      "candidateId": 2,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 77 分（较高匹配） · 岗位：2D角色原画 · 求职意向：未表明 · 当前：onemt",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-29T03:59:38.071Z"
+    },
+    {
+      "id": 3,
+      "candidateId": 3,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 72 分（较高匹配） · 岗位：2D角色原画 · 求职意向：未表明",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-29T03:59:38.079Z"
+    },
+    {
+      "id": 4,
+      "candidateId": 4,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 62 分（可关注） · 岗位：2D角色原画 · 求职意向：未表明",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-29T03:59:38.090Z"
+    },
+    {
+      "id": 5,
+      "candidateId": 5,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 62 分（可关注） · 岗位：2D角色原画 · 求职意向：可能看机会",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-29T03:59:38.095Z"
+    },
+    {
+      "id": 6,
+      "candidateId": 6,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 60 分（可关注） · 岗位：2D角色原画 · 求职意向：未表明",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-29T06:02:08.669Z"
+    },
+    {
+      "id": 7,
+      "candidateId": 7,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 79 分（较高匹配） · 岗位：2D角色原画 · 求职意向：可能看机会",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-29T06:02:14.367Z"
+    },
+    {
+      "id": 8,
+      "candidateId": 8,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 77 分（较高匹配） · 岗位：特效 · 求职意向：未表明 · 当前：拳头游戏 / 英雄联盟",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-29T07:13:15.072Z"
+    },
+    {
+      "id": 9,
+      "candidateId": 9,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 82 分（较高匹配） · 岗位：特效 · 求职意向：暂不看机会 · 当前：Tencent Games",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-29T07:13:24.135Z"
+    },
+    {
+      "id": 10,
+      "candidateId": 10,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 72 分（较高匹配） · 岗位：特效 · 求职意向：未表明",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-29T07:13:28.331Z"
+    },
+    {
+      "id": 11,
+      "candidateId": 11,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 78 分（较高匹配） · 岗位：美宣 · 求职意向：可能看机会 · 当前：网易游戏《神都夜行录》（仅作品署名，是否在职待确认）",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-30T01:27:17.745Z"
+    },
+    {
+      "id": 12,
+      "candidateId": 12,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 66 分（可关注） · 岗位：美宣 · 求职意向：可能看机会",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-30T01:29:07.783Z"
+    },
+    {
+      "id": 13,
+      "candidateId": 13,
+      "action": "created",
+      "detail": "从雷达扫描导入，评分 64 分（可关注） · 岗位：美宣 · 求职意向：未表明",
+      "operator": "雷达AI",
+      "createdAt": "2026-04-30T01:29:53.116Z"
+    }
+  ],
+  "nextId": {
+    "candidates": 14,
+    "notes": 1,
+    "history": 14,
+    "tags": 52
+  }
+}

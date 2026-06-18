@@ -156,6 +156,7 @@ export interface ScanParams {
   experience: string;
   region: string;
   weights?: ScoreWeights;
+  positionCategory?: PositionCategory;
 }
 
 // 用户自带的 AI 服务配置
@@ -185,3 +186,58 @@ export interface PositionBrief {
   artwork_features: string[];
   search_queries: string[];
 }
+
+// ---------- 岗位类型系统 ----------
+
+export type PositionCategory =
+  | "art"      // 原画、概念、3D、动效
+  | "tech"     // 开发、技术架构、图形程序
+  | "design"   // UI、视觉、品牌
+  | "content"  // 视频创作、社区运营
+  | "general"; // 产品、运营、策划（通用）
+
+export interface CategoryPreset {
+  defaultPlatforms: Platform[];
+  weights: ScoreWeights;
+  visionEnabled: boolean;
+  label: string;
+  description: string;
+}
+
+export const CATEGORY_PRESETS: Record<PositionCategory, CategoryPreset> = {
+  art: {
+    defaultPlatforms: ["artstation", "bilibili"],
+    weights: { jd: 30, keyword: 20, experience: 15, education: 5, openness: 5, followers: 25 },
+    visionEnabled: true,
+    label: "美术创作",
+    description: "原画师、概念设计、3D 美术、动效设计",
+  },
+  tech: {
+    defaultPlatforms: ["github"],
+    weights: { jd: 40, keyword: 25, experience: 20, education: 5, openness: 5, followers: 5 },
+    visionEnabled: false,
+    label: "技术研发",
+    description: "开发工程师、技术架构师、图形程序员",
+  },
+  design: {
+    defaultPlatforms: ["behance", "artstation"],
+    weights: { jd: 30, keyword: 20, experience: 15, education: 5, openness: 5, followers: 25 },
+    visionEnabled: true,
+    label: "设计师",
+    description: "UI 设计、视觉设计、品牌设计",
+  },
+  content: {
+    defaultPlatforms: ["bilibili"],
+    weights: { jd: 20, keyword: 15, experience: 15, education: 5, openness: 5, followers: 40 },
+    visionEnabled: false,
+    label: "内容创作",
+    description: "视频 UP 主、内容创作者、社区运营",
+  },
+  general: {
+    defaultPlatforms: ["github", "bilibili"],
+    weights: { jd: 40, keyword: 20, experience: 20, education: 5, openness: 5, followers: 10 },
+    visionEnabled: false,
+    label: "通用",
+    description: "产品经理、运营、策划等",
+  },
+};

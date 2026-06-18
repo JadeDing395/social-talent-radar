@@ -31,8 +31,9 @@ export interface ICP {
   companyInsight: string;
   channelStrategy: {
     artstation?: string[];
-    weibo?: string[];
-    xiaohongshu?: string[];
+    github?: string[];
+    bilibili?: string[];
+    behance?: string[];
   };
   sourceInputs: ICPInput;
   reasoning: string;

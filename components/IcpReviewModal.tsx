@@ -539,24 +539,36 @@ export default function IcpReviewModal({ icp, onApply, onClose }: Props) {
               />
             </div>
             <div>
-              <label className={labelClass}>微博策略</label>
+              <label className={labelClass}>GitHub 策略</label>
               <textarea
-                value={joinList(draft.channelStrategy.weibo)}
+                value={joinList(draft.channelStrategy.github)}
                 onChange={(event) => setDraft({
                   ...draft,
-                  channelStrategy: { ...draft.channelStrategy, weibo: splitList(event.target.value) },
+                  channelStrategy: { ...draft.channelStrategy, github: splitList(event.target.value) },
                 })}
                 rows={5}
                 className={fieldClass}
               />
             </div>
             <div>
-              <label className={labelClass}>小红书策略</label>
+              <label className={labelClass}>Bilibili 策略</label>
               <textarea
-                value={joinList(draft.channelStrategy.xiaohongshu)}
+                value={joinList(draft.channelStrategy.bilibili)}
                 onChange={(event) => setDraft({
                   ...draft,
-                  channelStrategy: { ...draft.channelStrategy, xiaohongshu: splitList(event.target.value) },
+                  channelStrategy: { ...draft.channelStrategy, bilibili: splitList(event.target.value) },
+                })}
+                rows={5}
+                className={fieldClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Behance 策略</label>
+              <textarea
+                value={joinList(draft.channelStrategy.behance)}
+                onChange={(event) => setDraft({
+                  ...draft,
+                  channelStrategy: { ...draft.channelStrategy, behance: splitList(event.target.value) },
                 })}
                 rows={5}
                 className={fieldClass}
@@ -564,19 +576,15 @@ export default function IcpReviewModal({ icp, onApply, onClose }: Props) {
             </div>
           </div>
 
-          {/* 规划中渠道:完整渠道矩阵 + 合规分级,灰显代表 roadmap(当前已接入 ArtStation/微博/小红书,其余规划中) */}
+          {/* Roadmap 渠道：仅展示真正还未接入的平台 */}
           <div>
-            <label className={labelClass}>更多推荐渠道(规划中 · 按岗位智能匹配)</label>
+            <label className={labelClass}>即将支持渠道（规划中）</label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-1">
               {[
-                { name: "Bilibili", dot: "🟡", reason: "动画/教程视频创作者" },
                 { name: "站酷 ZCOOL", dot: "🟡", reason: "国内动效/设计师" },
-                { name: "Behance", dot: "🟢", reason: "motion / 动画设计" },
                 { name: "Pixiv", dot: "🟡", reason: "插画 / 二次元" },
-                { name: "GitHub", dot: "🟢", reason: "技术 / 技术美术" },
-                { name: "Google Scholar", dot: "🟢", reason: "学术 / 研究人才" },
-                { name: "LinkedIn 领英", dot: "🔴", reason: "资深 / 海外履历" },
-                { name: "脉脉", dot: "🔴", reason: "职场社招" },
+                { name: "LinkedIn 领英", dot: "🔴", reason: "资深 / 海外履历（需官方合作）" },
+                { name: "YouTube", dot: "🟢", reason: "技术/创意内容创作者" },
               ].map((ch) => (
                 <div
                   key={ch.name}
@@ -593,7 +601,7 @@ export default function IcpReviewModal({ icp, onApply, onClose }: Props) {
               ))}
             </div>
             <p className="text-[11px] text-slate-400 mt-1.5">
-              🟢 公开可采　🟡 登录态限速　🔴 高 ToS 风险(走官方 API / 人工导入)　·　当前已接入 ArtStation / 微博 / 小红书
+              🟢 公开可采　🟡 需登录或限速　🔴 需官方合作　·　当前已接入 ArtStation / GitHub / Bilibili / Behance
             </p>
           </div>
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { RadarResult } from "@/lib/claude";
+import { PLATFORMS } from "@/lib/platforms";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -134,7 +135,7 @@ export async function POST(req: NextRequest) {
         fields: {
           姓名: r.name || r.username,
           岗位: r.position_name || "未知",
-          平台: r.platform === "weibo" ? "微博" : r.platform === "xiaohongshu" ? "小红书" : "ArtStation",
+          平台: PLATFORMS[r.platform].label,
           主页: { link: r.profile_url, text: r.profile_url },
           联系方式: r.contact ?? "未知",
           看机会: r.open_to_opportunity,

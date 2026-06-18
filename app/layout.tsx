@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TalentPilot · 觅talent",
-  description: "AI 招聘官引擎：ArtStation / 微博 / 小红书跨平台人才发现",
+  title: "TalentCompass · AI 人才雷达",
+  description: "合规多平台 AI 人才搜索引擎：GitHub / ArtStation / Bilibili / Behance",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

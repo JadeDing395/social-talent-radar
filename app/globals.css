@@ -5,8 +5,9 @@
  *
  * 主色：按当前页面所属平台动态切换（[data-platform] 选择器）
  * - ArtStation：深森林绿 #0d4f3c
- * - 微博：橙 #FF8200
- * - 小红书：红 #FF2442
+ * - GitHub：深灰 #24292f
+ * - Bilibili：蓝 #00a1d6
+ * - Behance：蓝 #1769ff
  * - 候选人库（中性）：slate-900 #0f172a
  * ========================================================================== */
 
@@ -46,19 +47,26 @@
   --color-brand-bg-hover: #dceee5;
   --color-brand-ring-rgba: 13, 79, 60;
 }
-[data-platform="weibo"] {
-  --color-brand: #FF8200;
-  --color-brand-dark: #cc6800;
-  --color-brand-bg: #fff4e6;
-  --color-brand-bg-hover: #ffe6cc;
-  --color-brand-ring-rgba: 255, 130, 0;
+[data-platform="github"] {
+  --color-brand: #24292f;
+  --color-brand-dark: #0d1117;
+  --color-brand-bg: #f0f3f6;
+  --color-brand-bg-hover: #eaeef2;
+  --color-brand-ring-rgba: 36, 41, 47;
 }
-[data-platform="xiaohongshu"] {
-  --color-brand: #FF2442;
-  --color-brand-dark: #cc1c35;
-  --color-brand-bg: #ffe6ec;
-  --color-brand-bg-hover: #ffd0d9;
-  --color-brand-ring-rgba: 255, 36, 66;
+[data-platform="bilibili"] {
+  --color-brand: #00a1d6;
+  --color-brand-dark: #007aa3;
+  --color-brand-bg: #e7f7fc;
+  --color-brand-bg-hover: #dff4fb;
+  --color-brand-ring-rgba: 0, 161, 214;
+}
+[data-platform="behance"] {
+  --color-brand: #1769ff;
+  --color-brand-dark: #0f4fc4;
+  --color-brand-bg: #edf4ff;
+  --color-brand-bg-hover: #e2edff;
+  --color-brand-ring-rgba: 23, 105, 255;
 }
 
 @theme inline {

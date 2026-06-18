@@ -6,10 +6,11 @@ import {
   PositionBrief,
   ScoreWeights,
   AiClientConfig,
+  type PositionCategory,
 } from "@/lib/scoring-config";
 import type { Platform } from "@/lib/types";
 import type { ICP, ICPInput } from "@/lib/icp-shared";
-import { PLATFORM_LIST } from "@/lib/platforms";
+import { PLATFORMS, PLATFORM_LIST } from "@/lib/platforms";
 
 export interface ScanStatus {
   type: "idle" | "scanning" | "done" | "error";
@@ -25,6 +26,7 @@ export interface ScanStatus {
 
 export interface ScanFormSnapshot {
   position: string;
+  positionCategory?: PositionCategory;
   jd: string;
   artStyles: string[];
   tools: string[];
@@ -315,12 +317,7 @@ export function RadarScanProvider({ children }: { children: ReactNode }) {
       aiConfig: AiClientConfig,
       controller: AbortController,
     ) => {
-      const apiPath =
-        platform === "weibo"
-          ? "/api/weibo/scan"
-          : platform === "xiaohongshu"
-          ? "/api/xhs/scan"
-          : "/api/artstation/scan";
+      const apiPath = `${PLATFORMS[platform].apiPrefix}/scan`;
 
       try {
         const res = await fetch(apiPath, {

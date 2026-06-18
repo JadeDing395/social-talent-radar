@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { readDB, writeDB, addHistory, getOrCreateTagId, findBySocialId } from "./db";
+import { PLATFORMS } from "./platforms";
 import { getUserIdFromRequest } from "./userIdentity";
 import { RadarResult } from "./scoring-config";
 import type { Candidate, Platform } from "./types";
@@ -83,7 +84,7 @@ export async function handleSave(req: NextRequest, expectedPlatform: Platform): 
     db,
     candidate.id,
     "imported",
-    `从 ${expectedPlatform === "weibo" ? "微博" : "小红书"} 扫描入库 · 评分 ${body.total_score}（${body.score_level}）· ${body.inferred_position}`,
+    `从 ${PLATFORMS[expectedPlatform].label} 扫描入库 · 评分 ${body.total_score}（${body.score_level}）· ${body.inferred_position}`,
     "Radar",
   );
   // 也写一条评分明细

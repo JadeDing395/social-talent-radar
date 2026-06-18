@@ -5,7 +5,13 @@ import ChipSelect from "./ChipSelect";
 import type { Platform } from "@/lib/types";
 import { DEFAULT_EDUCATION, EDUCATION_OPTIONS, normalizeEducation, type ICP } from "@/lib/icp-shared";
 import { useRadarScan, ScanFormSnapshot } from "./RadarScanContext";
-import { ScoreWeights, DEFAULT_WEIGHTS, DIMENSION_DEFINITIONS } from "@/lib/scoring-config";
+import {
+  CATEGORY_PRESETS,
+  ScoreWeights,
+  DEFAULT_WEIGHTS,
+  DIMENSION_DEFINITIONS,
+  type PositionCategory,
+} from "@/lib/scoring-config";
 import { loadAiConfig } from "./AiSettingsModal";
 import { PLATFORMS } from "@/lib/platforms";
 import SectionCard, { ActionCard } from "./SectionCard";
@@ -16,29 +22,57 @@ interface Props {
   appliedIcp?: ICP | null;
 }
 
-const POSITIONS = [
-  "原画师 / 角色原画",
-  "场景原画 / 概念设计",
-  "插画师",
-  "Q版/二次元立绘",
-  "UI/UX 设计",
-  "3D 角色 / 3D 场景",
-  "动效 / 特效",
-  "美术指导 / 主美",
-  "其他（自定义）",
-];
+const OTHER_POSITION = "其他（自定义）";
+
+const POSITION_OPTIONS: Record<PositionCategory, string[]> = {
+  art: [
+    "原画师 / 角色原画", "场景原画 / 概念设计", "插画师",
+    "Q版/二次元立绘", "3D 角色 / 3D 场景", "动效 / 特效",
+    "美术指导 / 主美",
+  ],
+  tech: [
+    "前端工程师", "后端工程师", "全栈工程师",
+    "图形程序员 / TA", "游戏客户端工程师", "服务端工程师", "数据工程师",
+  ],
+  design: [
+    "UI/UX 设计师", "视觉设计师", "品牌设计师",
+    "交互设计师", "游戏 UI 设计师",
+  ],
+  content: [
+    "视频创作者 / UP 主", "内容运营", "游戏博主",
+    "教程创作者", "社区运营",
+  ],
+  general: [
+    "产品经理", "游戏策划", "项目经理",
+    "运营", "市场推广", "商务拓展",
+  ],
+};
 
 const ART_STYLES = ["二次元", "国风/古风", "写实", "Q版/卡通", "赛博朋克", "奇幻", "MOBA 写实", "国漫"];
 const TOOLS = ["Photoshop", "Procreate", "Clip Studio", "Blender", "ZBrush", "Maya", "3ds Max", "Substance Painter"];
-// 关键词:涵盖游戏 IP、题材方向、画师常用标签;用户也可以 + 自定义任意词
-const KEYWORDS = [
-  // 头部 IP
-  "原神", "鸣潮", "崩坏", "王者荣耀", "明日方舟", "阴阳师", "光与夜之恋", "恋与制作人", "剑网三",
-  // 题材
-  "机甲", "古风武侠", "都市校园", "玄幻", "战棋", "卡牌", "开放世界", "末世", "蒸汽朋克",
-  // 画师身份/接稿
-  "约稿", "接稿", "商稿", "动漫博主", "插画师",
-];
+// 当前类型下的快捷关键词建议
+const KEYWORD_OPTIONS: Record<PositionCategory, string[]> = {
+  art: [
+    "原神", "鸣潮", "崩坏", "王者荣耀", "明日方舟",
+    "约稿", "接稿", "商稿", "二次元", "国风", "写实", "赛博朋克",
+  ],
+  tech: [
+    "React", "Unity", "Unreal", "TypeScript", "Python", "Rust",
+    "WebGL", "OpenGL", "DirectX", "游戏引擎", "开源", "求职",
+  ],
+  design: [
+    "Figma", "原型设计", "游戏 UI", "移动端", "Design System",
+    "Brand Identity", "Motion Design", "接稿", "作品集",
+  ],
+  content: [
+    "游戏攻略", "游戏评测", "教程", "Vlog", "游戏解说",
+    "UP 主", "粉丝互动", "直播",
+  ],
+  general: [
+    "游戏策划", "数值策划", "产品设计", "用户研究",
+    "商业分析", "增长", "运营",
+  ],
+};
 const REGIONS = ["中国大陆", "中国区域", "包含港澳台", "亚洲区域", "不限"];
 
 const WEIGHT_STORAGE = "radar-weights";
@@ -74,10 +108,22 @@ function saveJdForPosition(position: string, jd: string) {
 const fieldClass = "w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-slate-400/30 transition-shadow tabular-nums";
 const labelClass = "block text-xs font-medium text-slate-700 mb-1.5";
 
+function isPositionCategory(value: unknown): value is PositionCategory {
+  return typeof value === "string" && value in CATEGORY_PRESETS;
+}
+
+function findCategoryForPosition(position: string): PositionCategory | null {
+  for (const cat of Object.keys(POSITION_OPTIONS) as PositionCategory[]) {
+    if (POSITION_OPTIONS[cat].includes(position)) return cat;
+  }
+  return null;
+}
+
 export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, appliedIcp }: Props) {
   const { isAnyScanning, stopScan, startScan } = useRadarScan();
 
-  const [position, setPosition] = useState(POSITIONS[0]);
+  const [category, setCategory] = useState<PositionCategory>("art");
+  const [position, setPosition] = useState(POSITION_OPTIONS.art[0]);
   const [customPosition, setCustomPosition] = useState("");
   const [jd, setJd] = useState("");
   const [savedJdForCurrentPosition, setSavedJdForCurrentPosition] = useState("");
@@ -95,6 +141,17 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
   const [weightsOpen, setWeightsOpen] = useState(false);
   const [appliedIcpKey, setAppliedIcpKey] = useState("");
 
+  const handleCategoryChange = (newCat: PositionCategory) => {
+    setCategory(newCat);
+    const preset = CATEGORY_PRESETS[newCat];
+    setPosition(POSITION_OPTIONS[newCat][0]);
+    setCustomPosition("");
+    setArtStyles([]);
+    setTools([]);
+    setThemes([]);
+    setWeights(preset.weights);
+  };
+
   // mount 后从 localStorage 同步表单初值。setState in effect 是 hydration 场景的标准模式,
   // SSR 必须先吐 INITIAL,client 再补真值,无法避免 — 关 lint 警告。
   /* eslint-disable react-hooks/set-state-in-effect */
@@ -103,7 +160,14 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
       const raw = localStorage.getItem(FORM_STORAGE);
       if (raw) {
         const f = JSON.parse(raw) as Partial<ScanFormSnapshot> & { customPosition?: string };
-        setPosition(f.position ?? POSITIONS[0]);
+        const savedCategory = isPositionCategory(f.positionCategory) ? f.positionCategory : "art";
+        const savedPosition = f.position ?? POSITION_OPTIONS[savedCategory][0];
+        setCategory(savedCategory);
+        setPosition(
+          POSITION_OPTIONS[savedCategory].includes(savedPosition) || savedPosition === OTHER_POSITION
+            ? savedPosition
+            : POSITION_OPTIONS[savedCategory][0],
+        );
         if (f.customPosition) setCustomPosition(f.customPosition);
         setArtStyles(f.artStyles ?? []);
         setTools(f.tools ?? []);
@@ -122,7 +186,14 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
     }
   }, []);
 
-  const effectivePositionKey = position === "其他（自定义）" ? customPosition.trim() : position;
+  const effectivePositionKey = position === OTHER_POSITION ? customPosition.trim() : position;
+  useEffect(() => {
+    if (position !== OTHER_POSITION && !POSITION_OPTIONS[category].includes(position)) {
+      setPosition(POSITION_OPTIONS[category][0]);
+      setCustomPosition("");
+    }
+  }, [category, position]);
+
   useEffect(() => {
     if (!effectivePositionKey) {
       setJd("");
@@ -163,11 +234,14 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
     const nextKey = JSON.stringify(appliedIcp);
     if (nextKey === appliedIcpKey) return;
 
-    const nextPosition = POSITIONS.includes(appliedIcp.position) ? appliedIcp.position : "其他（自定义）";
-    const nextCustomPosition = nextPosition === "其他（自定义）" ? appliedIcp.position : "";
-    const nextPositionKey = nextPosition === "其他（自定义）" ? nextCustomPosition : nextPosition;
+    const matchedCategory = findCategoryForPosition(appliedIcp.position);
+    const nextCategory = matchedCategory ?? category;
+    const nextPosition = matchedCategory ? appliedIcp.position : OTHER_POSITION;
+    const nextCustomPosition = nextPosition === OTHER_POSITION ? appliedIcp.position : "";
+    const nextPositionKey = nextPosition === OTHER_POSITION ? nextCustomPosition : nextPosition;
     const nextSnapshot: ScanFormSnapshot & { customPosition: string } = {
       position: nextPosition,
+      positionCategory: nextCategory,
       customPosition: nextCustomPosition,
       jd: appliedIcp.jd,
       artStyles,
@@ -182,6 +256,7 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
     };
 
     if (nextPositionKey) saveJdForPosition(nextPositionKey, appliedIcp.jd);
+    setCategory(nextCategory);
     setPosition(nextPosition);
     setCustomPosition(nextCustomPosition);
     setJd(appliedIcp.jd);
@@ -197,6 +272,7 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
     appliedIcp,
     appliedIcpKey,
     artStyles,
+    category,
     minScore,
     region,
     rescanIntervalDays,
@@ -210,7 +286,7 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
   const hasUnloggedIn = unloggedInPlatforms.length > 0;
 
   const handleScan = async () => {
-    const effectivePosition = position === "其他（自定义）" ? customPosition.trim() : position;
+    const effectivePosition = position === OTHER_POSITION ? customPosition.trim() : position;
     if (!effectivePosition) {
       alert("请填入岗位名称");
       return;
@@ -229,6 +305,7 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
     }
     const snapshot: ScanFormSnapshot = {
       position: effectivePosition,
+      positionCategory: category,
       jd,
       artStyles,
       tools,
@@ -285,13 +362,40 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
     <div className="space-y-4">
       {/* ─── 基本信息 ─── */}
       <SectionCard title="基本信息" subtitle="岗位、地域、学历、经验,这些是 AI 评分的基础语境">
+        {/* 岗位类型选择器 */}
+        <div className="mb-5">
+          <label className={labelClass}>岗位类型</label>
+          <div className="flex flex-wrap gap-2">
+            {(Object.keys(CATEGORY_PRESETS) as PositionCategory[]).map((cat) => {
+              const preset = CATEGORY_PRESETS[cat];
+              const active = category === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => handleCategoryChange(cat)}
+                  className={`px-3.5 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                    active
+                      ? "bg-slate-900 text-white border-slate-900"
+                      : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
+                  }`}
+                >
+                  {preset.label}
+                  <span className={`ml-1.5 text-xs ${active ? "text-slate-300" : "text-slate-400"}`}>
+                    {preset.description.split("、")[0]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>岗位名称</label>
             <select value={position} onChange={(e) => setPosition(e.target.value)} className={fieldClass}>
-              {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
+              {[...POSITION_OPTIONS[category], OTHER_POSITION].map((p) => <option key={p} value={p}>{p}</option>)}
             </select>
-            {position === "其他（自定义）" && (
+            {position === OTHER_POSITION && (
               <input
                 type="text"
                 value={customPosition}
@@ -370,11 +474,22 @@ export default function RadarScanForm({ selectedPlatforms, unloggedInPlatforms, 
       </SectionCard>
 
       {/* ─── 风格筛选 ─── */}
-      <SectionCard title="风格筛选" subtitle="多选 chip,留空表示不限">
+      <SectionCard title="关键词筛选" subtitle="多选 chip,留空表示不限">
         <div className="grid grid-cols-1 gap-4">
-          <ChipSelect label="美术风格" options={ART_STYLES} value={artStyles} onChange={setArtStyles} />
-          <ChipSelect label="工具/软件" options={TOOLS} value={tools} onChange={setTools} />
-          <ChipSelect label="关键词" options={KEYWORDS} value={themes} onChange={setThemes} />
+          {(category === "art" || category === "design") && (
+            <>
+              <ChipSelect label="风格标签" options={ART_STYLES} value={artStyles} onChange={setArtStyles} allowCustom />
+              <ChipSelect label="工具 / 软件" options={TOOLS} value={tools} onChange={setTools} allowCustom />
+            </>
+          )}
+          <ChipSelect
+            label="关键词"
+            options={KEYWORD_OPTIONS[category]}
+            value={themes}
+            onChange={setThemes}
+            allowCustom
+            placeholder="添加自定义关键词..."
+          />
         </div>
       </SectionCard>
 
